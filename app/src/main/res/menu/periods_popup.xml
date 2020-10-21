@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/period_overall"
+            android:title="@string/period_overall"/>
+        <item
+            android:id="@+id/period_year"
+            android:title="@string/period_year"/>
+        <item
+            android:id="@+id/period_half_year"
+            android:title="@string/period_half_year"/>
+        <item
+            android:id="@+id/period_quarter"
+            android:title="@string/period_quarter"/>
+        <item
+            android:id="@+id/period_month"
+            android:title="@string/period_month"/>
+        <item
+            android:id="@+id/period_week"
+            android:title="@string/period_week"/>
+    </group>
+</menu>

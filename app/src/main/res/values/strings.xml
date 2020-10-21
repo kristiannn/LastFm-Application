@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">LastFm-Application</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="last_fm">Last FM</string>
+
+    //Drawer
+    <string name="categories">Categories</string>
+    <string name="other">Other</string>
+    <string name="artists">Artists</string>
+    <string name="albums">Albums</string>
+    <string name="tracks">Tracks</string>
+    <string name="recents">Recently Played</string>
+    <string name="friends">Friends</string>
+    <string name="logout">Logout</string>
+
+    <string name="ok">OK</string>
+    <string name="enter_username">Enter your username</string>
+
+    //Periods
+    <string name="period">Period</string>
+    <string name="period_overall">Overall</string>
+    <string name="period_year">Last year</string>
+    <string name="period_half_year">Last 6 months</string>
+    <string name="period_quarter">Last 3 months</string>
+    <string name="period_month">Last month</string>
+    <string name="period_week">Last week</string>
+
+    //Details page
+    <string name="artist">Artist</string>
+    <string name="album">Album</string>
+    <string name="track">Track</string>
+    <string name="duration">Duration</string>
+    <string name="published">Published</string>
+    <string name="listeners">Listeners</string>
+    <string name="playCount">Play Count</string>
+    <string name="bio">Bio</string>
+
+    //Content descriptions
+    <string name="lastfm_logo_description">LastFM Logo</string>
+    <string name="login_logo_description">Login logo</string>
+    <string name="cover_description">An artist, album or track cover</string>
+    <string name="profile_picture_description">Profile picture</string>
+
+    //Auto-fill hints
+    <string name="login_username_autoFill_hint">username</string>
+
+    //Buttons
+    <string name="login_button_text">Login</string>
+</resources>

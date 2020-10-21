@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginRight="32dp"
+        android:contentDescription="@string/lastfm_logo_description"
+        android:src="@drawable/ic_lastfm_logo"
+        app:layout_constraintDimensionRatio="true"/>
+
+    <TextView
+        android:id="@+id/tvDescription"
+        style="@style/TextStyle.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/etUsername"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="@string/enter_username"/>
+
+    <ImageView
+        android:id="@+id/ivUserLogo"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        android:layout_alignTop="@id/etUsername"
+        android:layout_alignBottom="@id/etUsername"
+        android:layout_marginEnd="8dp"
+        android:layout_toStartOf="@id/etUsername"
+        android:contentDescription="@string/login_logo_description"
+        app:srcCompat="@drawable/user_logo"/>
+
+    <EditText
+        android:id="@+id/etUsername"
+        style="@style/EditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttonLogin"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:autofillHints="@string/login_username_autoFill_hint"
+        android:hint="@string/login_username_autoFill_hint"/>
+
+    <Button
+        android:id="@+id/buttonLogin"
+        style="@style/Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginBottom="40dp"
+        android:text="@string/login_button_text"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ProgressBarCircular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"/>
+
+</RelativeLayout>

@@ -1,0 +1,84 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!--Progress bar-->
+    <style name="ProgressBarCircular">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/colorPrimary</item>
+    </style>
+
+    <style name="ProgressBarHorizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/colorPrimary</item>
+        <item name="android:indeterminateTintMode">src_atop</item>
+    </style>
+
+    <!--Text Styles-->
+    <style name="TextStyle">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/fontSize_medium</item>
+    </style>
+
+    <style name="TextStyle.Main">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="TextStyle.Secondary">
+        <item name="android:textSize">@dimen/fontSize_small</item>
+        <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="TextStyle.Large">
+        <item name="android:textSize">@dimen/fontSize_large</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="TextStyle.Counters">
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="TextStyle.Dialog" parent="TextStyle">
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <!--Edit Text Styles-->
+    <style name="EditText">
+        <item name="android:inputType">textPersonName</item>
+        <item name="android:ems">12</item>
+        <item name="android:textColorHint">@color/colorGreyLight</item>
+    </style>
+
+    <!--Button Styles-->
+    <style name="Button">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:background">@drawable/button_drawable</item>
+    </style>
+
+    <style name="Button.Dialog">
+        <item name="android:minWidth">72dp</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <style name="ButtonBorderless" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textSize">@dimen/fontSize_small</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!--Layout styles-->
+    <style name="DialogStyle">
+        <item name="android:background">@drawable/dialog_window</item>
+    </style>
+
+</resources>

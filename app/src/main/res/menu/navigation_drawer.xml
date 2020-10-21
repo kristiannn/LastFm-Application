@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item android:title="@string/categories">
+        <menu>
+            <item
+                android:id="@+id/nav_artists"
+                android:icon="@drawable/ic_launcher_foreground"
+                android:title="@string/artists"/>
+            <item
+                android:id="@+id/nav_albums"
+                android:icon="@drawable/ic_launcher_foreground"
+                android:title="@string/albums"/>
+            <item
+                android:id="@+id/nav_tracks"
+                android:icon="@drawable/ic_launcher_foreground"
+                android:title="@string/tracks"/>
+            <item
+                android:id="@+id/nav_recently_played"
+                android:icon="@drawable/ic_launcher_foreground"
+                android:title="@string/recents"/>
+            <item
+                android:id="@+id/nav_friends"
+                android:icon="@drawable/ic_launcher_foreground"
+                android:title="@string/friends"/>
+        </menu>
+    </item>
+
+    <item android:title="@string/other">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_launcher_foreground"
+                android:title="@string/logout"/>
+        </menu>
+    </item>
+
+</menu>
