@@ -1,8 +1,6 @@
 package com.neno.lastfmapp.di
 
-import com.neno.lastfmapp.network.LastFmDataFetcher
-import com.neno.lastfmapp.network.LastFmService
-import com.neno.lastfmapp.network.LastFmServiceOperations
+import com.neno.lastfmapp.network.*
 import com.neno.lastfmapp.network.utils.HttpResultConverter
 import com.neno.lastfmapp.network.utils.LastFmResultConverter
 import org.koin.dsl.module
@@ -14,9 +12,13 @@ val networkModule = module {
 
     factory { provideLastFmService(get()) }
 
+    factory { provideLastFmAuthService(get()) }
+
     single<HttpResultConverter> { LastFmResultConverter() }
 
     single<LastFmServiceOperations> { provideLastFmDataFetcher(get(), get()) }
+
+    single<LastFmAuthOperations> { provideLastFmAuth(get(), get()) }
 }
 
 fun provideRetrofit(): Retrofit
@@ -32,7 +34,17 @@ fun provideLastFmService(retrofit: Retrofit): LastFmService
     return retrofit.create(LastFmService::class.java)
 }
 
+fun provideLastFmAuthService(retrofit: Retrofit): LastFmAuthService
+{
+    return retrofit.create(LastFmAuthService::class.java)
+}
+
 fun provideLastFmDataFetcher(service: LastFmService, lastFmResultConverter: HttpResultConverter): LastFmDataFetcher
 {
     return LastFmDataFetcher(service, lastFmResultConverter)
+}
+
+fun provideLastFmAuth(service: LastFmAuthService, lastFmResultConverter: HttpResultConverter): LastFmAuth
+{
+    return LastFmAuth(service, lastFmResultConverter)
 }

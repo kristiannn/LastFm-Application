@@ -26,6 +26,7 @@ class LoginController : BaseController()
     private lateinit var loginView: View
     private lateinit var loginActivity: Activity
     private lateinit var usernameEditText: EditText
+    private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var imm: InputMethodManager
@@ -55,6 +56,7 @@ class LoginController : BaseController()
     {
         loginActivity = activity!!
         usernameEditText = loginView.findViewById(R.id.etUsername)
+        passwordEditText = loginView.findViewById(R.id.etPassword)
         loginButton = loginView.findViewById(R.id.buttonLogin)
         progressBar = loginView.findViewById(R.id.progressBar)
         imm = loginActivity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -66,7 +68,7 @@ class LoginController : BaseController()
             onLoginClick()
         }
 
-        usernameEditText.setOnEditorActionListener { _, actionId, _ ->
+        passwordEditText.setOnEditorActionListener { _, actionId, _ ->
             return@setOnEditorActionListener when (actionId)
             {
                 EditorInfo.IME_ACTION_DONE ->
@@ -133,6 +135,6 @@ class LoginController : BaseController()
     private fun onLoginClick()
     {
         imm.hideSoftInputFromWindow(usernameEditText.windowToken, 0)
-        viewModel.getProfile(usernameEditText.text.toString())
+        viewModel.getProfile(usernameEditText.text.toString(), passwordEditText.text.toString())
     }
 }

@@ -18,12 +18,15 @@ import org.koin.core.context.GlobalContext.get
 
 class RecentsRecyclerAdapter(
     private var tracksList: List<RecentTrackWrapper?>,
-    val onTrackItemClicked: OnTrackItemClicked
+    val onTrackItemClicked: OnTrackItemClicked,
+    val onSelectionChange: OnSelectionChange
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     private val timeCalculator: TimeCalculator by get().inject()
 
     private var isLoading = false
+    private var selectionMode = false
+    private var selectedTracks: MutableList<RecentTrackWrapper> = mutableListOf()
 
     inner class TracksRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
@@ -49,13 +52,15 @@ class RecentsRecyclerAdapter(
 
             ProgressBarRecyclerViewHolder(view)
         }
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
     {
         if (holder is TracksRecyclerViewHolder)
         {
+            if (isItemSelected(position)) holder.itemView.setBackgroundResource(R.drawable.recycler_item_selected)
+            else holder.itemView.setBackgroundResource(R.drawable.recycler_item)
+
             holder.positionTextView.visibility = View.GONE
             holder.dateTextView.setPaddingRelative(0, 0, 8.dp, 0)
 
@@ -63,16 +68,63 @@ class RecentsRecyclerAdapter(
             holder.trackTextView.text = tracksList[position]!!.track
             holder.dateTextView.text =
                 if (tracksList[position]!!.date != null) timeCalculator.convertToTime(tracksList[position]!!.date!!)
-                else "Now Playing"
+                else holder.itemView.resources.getString(R.string.now_playing)
 
             Glide.with(holder.itemView).load(tracksList[position]!!.image)
                 .transform(RoundedCorners(20))
                 .into(holder.coverImageView)
 
             holder.itemView.setOnClickListener {
-                onTrackItemClicked.invoke(
-                    tracksList[position]!!.artist, tracksList[position]!!.track
-                )
+                if (selectionMode)
+                {
+                    if (isItemSelected(position))
+                    {
+                        selectedTracks.remove(tracksList[position])
+                        if (selectedTracks.size == 0)
+                        {
+                            selectionMode = false
+                        }
+                    } else
+                    {
+                        tracksList[position]?.let { selectedTracks.add(it) }
+                    }
+
+
+                    onSelectionChange.invoke(selectionMode, selectedItemsCount())
+                } else
+                {
+                    onTrackItemClicked.invoke(
+                        tracksList[position]!!.artist, tracksList[position]!!.track
+                    )
+                }
+
+                notifyItemChanged(position)
+            }
+
+            holder.itemView.setOnLongClickListener {
+
+                if (isItemSelected(position))
+                {
+                    selectedTracks.remove(tracksList[position])
+                    if (selectedTracks.size == 0)
+                    {
+                        selectionMode = false
+                    }
+                } else
+                {
+                    tracksList[position]?.let {
+                        selectedTracks.add(it)
+
+                        if (!selectionMode)
+                        {
+                            selectionMode = true
+                        }
+                    }
+                }
+
+                onSelectionChange.invoke(selectionMode, selectedItemsCount())
+                notifyItemChanged(position)
+                true
             }
         }
     }
@@ -83,6 +135,12 @@ class RecentsRecyclerAdapter(
     {
         return if (tracksList[position] == null) PROGRESS_ITEM_TYPE else TRACK_ITEM_TYPE
     }
+
+    private fun isItemSelected(position: Int): Boolean = selectedTracks.contains(tracksList[position])
+
+    private fun selectedItemsCount(): Int = selectedTracks.size
+
+    fun getSelectedItems(): List<RecentTrackWrapper> = selectedTracks
 
     fun updateList(newTracksList: List<RecentTrackWrapper>)
     {
@@ -126,3 +184,5 @@ class RecentsRecyclerAdapter(
         private const val PROGRESS_ITEM_TYPE = 1
     }
 }
+
+typealias OnSelectionChange = (selectionMode: Boolean, selectedCount: Int) -> Unit

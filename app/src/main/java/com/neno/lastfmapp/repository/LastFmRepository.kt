@@ -22,4 +22,6 @@ interface LastFmRepository
     suspend fun getAlbumDetails(artist: String, album: String): Result<AlbumDetailsWrapper>
 
     suspend fun getArtistDetails(artist: String): Result<ArtistDetailsWrapper>
+
+    suspend fun getUserSession(username: String, password: String): Result<String>
 }

@@ -4,6 +4,8 @@ interface AccountManager
 {
     fun saveUser(username: String, pictureUrl: String)
 
+    fun saveSessionKeyAndPassword(password: String, sessionKey: String)
+
     fun getUser(): String
 
     fun getProfilePicture(): String

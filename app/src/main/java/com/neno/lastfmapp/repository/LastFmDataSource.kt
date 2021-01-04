@@ -3,11 +3,14 @@ package com.neno.lastfmapp.repository
 import android.database.sqlite.SQLiteConstraintException
 import com.neno.lastfmapp.Result
 import com.neno.lastfmapp.database.LastFmDatabaseOperations
+import com.neno.lastfmapp.network.LastFmAuthOperations
 import com.neno.lastfmapp.network.LastFmServiceOperations
+import com.neno.lastfmapp.network.utils.LastFmMethods
 import com.neno.lastfmapp.repository.models.*
 
 class LastFmDataSource(
     private val lastFmServiceOperations: LastFmServiceOperations,
+    private val lastFmAuthOperations: LastFmAuthOperations,
     private val lastFmDatabase: LastFmDatabaseOperations
 ) : LastFmRepository
 {
@@ -111,6 +114,11 @@ class LastFmDataSource(
     override suspend fun getArtistDetails(artist: String): Result<ArtistDetailsWrapper>
     {
         return lastFmServiceOperations.getArtistDetails(artist)
+    }
+
+    override suspend fun getUserSession(username: String, password: String): Result<String>
+    {
+        return lastFmAuthOperations.getSessionKey(LastFmMethods.GET_MOBILE_SESSION, username, password)
     }
 
     private suspend inline fun <Model> requestLists(

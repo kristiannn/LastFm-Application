@@ -25,7 +25,7 @@ class LoginViewModel(
         _screenState.value = ScreenState()
     }
 
-    fun getProfile(username: String?)
+    fun getProfile(username: String?, password: String?)
     {
         viewModelScope.launch(Dispatchers.IO) {
             _screenState.postValue(
@@ -48,19 +48,52 @@ class LoginViewModel(
                 return@launch
             }
 
-            val result = lastFmRepository.getProfile(username)
-
-            if (result is Result.Success)
+            if (password.isNullOrEmpty())
             {
-                accountManager.saveUser(username = result.data.username, pictureUrl = result.data.profilePicture)
-
                 _screenState.postValue(
                     ScreenState(
                         isLoading = false,
-                        errorMessage = null,
-                        userLogged = result.data.username
+                        errorMessage = ValidationError.EmptyPassword.message,
+                        userLogged = null
                     )
                 )
+                return@launch
+            }
+
+            val result = lastFmRepository.getUserSession(username, password)
+
+            if (result is Result.Success)
+            {
+                accountManager.saveSessionKeyAndPassword(password, result.data)
+
+                val profileResult = lastFmRepository.getProfile(username)
+
+                if (profileResult is Result.Success)
+                {
+                    accountManager.saveUser(
+                        username = profileResult.data.username,
+                        pictureUrl = profileResult.data.profilePicture
+                    )
+
+                    _screenState.postValue(
+                        ScreenState(
+                            isLoading = false,
+                            errorMessage = null,
+                            userLogged = profileResult.data.username
+                        )
+                    )
+                } else if (profileResult is Result.Error)
+                {
+                    _screenState.postValue(
+                        ScreenState(
+                            isLoading = false,
+                            errorMessage = profileResult.error.message,
+                            userLogged = null
+                        )
+                    )
+
+                    return@launch
+                }
             } else if (result is Result.Error)
             {
                 _screenState.postValue(
@@ -83,5 +116,6 @@ class LoginViewModel(
 
 sealed class ValidationError(message: String? = null) : Throwable(message)
 {
-    object EmptyUsername : ValidationError("You need to type in a username!")
+    object EmptyUsername : ValidationError("You need to type in your username!")
+    object EmptyPassword : ValidationError("You need to type in your password!")
 }

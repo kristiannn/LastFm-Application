@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +33,7 @@ class RecentsController(bundle: Bundle) : BaseController(bundle)
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerAdapter: RecentsRecyclerAdapter
     private lateinit var progressBar: ProgressBar
+    private lateinit var scrobbleButton: Button
     private lateinit var swipeContainer: SwipeRefreshLayout
 
     private val username by lazy { args.getString(BundleStrings.USERNAME_KEY) }
@@ -61,7 +63,10 @@ class RecentsController(bundle: Bundle) : BaseController(bundle)
         recentsActivity = activity!!
         recyclerView = recentsView.findViewById(R.id.recyclerView)!!
         progressBar = recentsView.findViewById(R.id.progressBar)!!
+        scrobbleButton = recentsView.findViewById(R.id.buttonScrobble)!!
         swipeContainer = recentsView.findViewById(R.id.swipeContainer)!!
+
+        scrobbleButton.visibility = View.INVISIBLE
 
         swipeContainer.setOnRefreshListener {
             viewModel.getRecentTracks(true)
@@ -71,6 +76,10 @@ class RecentsController(bundle: Bundle) : BaseController(bundle)
         val layoutManager = LinearLayoutManager(recentsActivity)
 
         recyclerView.layoutManager = layoutManager
+
+        scrobbleButton.setOnClickListener {
+
+        }
 
         recyclerAdapter = RecentsRecyclerAdapter(
             tracksList = viewModel.recentsListState.value!!.tracksList,
@@ -85,28 +94,55 @@ class RecentsController(bundle: Bundle) : BaseController(bundle)
                         .popChangeHandler(HorizontalChangeHandler())
                         .pushChangeHandler(HorizontalChangeHandler())
                 )
-            })
+            },
+            onSelectionChange = { selectionMode, selectedCount ->
+                if (selectionMode)
+                {
+                    scrobbleButton.text = resources?.getString(R.string.scrobble_songs, selectedCount)
+
+                    if (scrobbleButton.visibility != View.VISIBLE)
+                    {
+                        scrobbleButton.animate()
+                            .translationYBy(-scrobbleButton.height.toFloat())
+                            .setDuration(300L)
+                            .withStartAction { scrobbleButton.visibility = View.VISIBLE }
+                            .start()
+                    }
+                } else
+                {
+                    if (scrobbleButton.visibility != View.GONE)
+                    {
+                        scrobbleButton.animate()
+                            .translationYBy(scrobbleButton.height.toFloat())
+                            .setDuration(300L)
+                            .withEndAction { scrobbleButton.visibility = View.GONE }
+                            .start()
+                    }
+                }
+            }
+        )
 
         recyclerView.adapter = recyclerAdapter
         recyclerView.setHasFixedSize(true)
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener()
-        {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
+        recyclerView.addOnScrollListener(
+            object : RecyclerView.OnScrollListener()
             {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if (!viewModel.screenState.value!!.isLoading && !viewModel.screenState.value!!.isListUpdating
-                    && recyclerView.layoutManager!!.itemCount == layoutManager.findLastVisibleItemPosition() + 1
-                )
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
                 {
-                    recyclerAdapter.addLoadingItem()
-                    recyclerView.scrollToPosition(recyclerView.layoutManager!!.itemCount - 1)
+                    super.onScrollStateChanged(recyclerView, newState)
 
-                    viewModel.getRecentTracks(false)
+                    if (!viewModel.screenState.value!!.isLoading && !viewModel.screenState.value!!.isListUpdating
+                        && recyclerView.layoutManager!!.itemCount == layoutManager.findLastVisibleItemPosition() + 1
+                    )
+                    {
+                        recyclerAdapter.addLoadingItem()
+                        recyclerView.scrollToPosition(recyclerView.layoutManager!!.itemCount - 1)
+
+                        viewModel.getRecentTracks(false)
+                    }
                 }
-            }
-        })
+            })
     }
 
     private fun setObservers()

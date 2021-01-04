@@ -236,12 +236,12 @@ class MainActivity : AppCompatActivity()
         //Set button text
         when (getSelectedPeriod())
         {
-            LastFmPeriodParams.Overall.tag -> periodsButton.text = resources.getString(R.string.period_overall)
-            LastFmPeriodParams.Year.tag -> periodsButton.text = resources.getString(R.string.period_year)
-            LastFmPeriodParams.HalfYear.tag -> periodsButton.text = resources.getString(R.string.period_half_year)
-            LastFmPeriodParams.Quarter.tag -> periodsButton.text = resources.getString(R.string.period_quarter)
-            LastFmPeriodParams.Month.tag -> periodsButton.text = resources.getString(R.string.period_month)
-            LastFmPeriodParams.Week.tag -> periodsButton.text = resources.getString(R.string.period_week)
+            LastFmPeriodParams.Overall -> periodsButton.text = resources.getString(R.string.period_overall)
+            LastFmPeriodParams.Year -> periodsButton.text = resources.getString(R.string.period_year)
+            LastFmPeriodParams.HalfYear -> periodsButton.text = resources.getString(R.string.period_half_year)
+            LastFmPeriodParams.Quarter -> periodsButton.text = resources.getString(R.string.period_quarter)
+            LastFmPeriodParams.Month -> periodsButton.text = resources.getString(R.string.period_month)
+            LastFmPeriodParams.Week -> periodsButton.text = resources.getString(R.string.period_week)
         }
 
         periodsButton.setOnClickListener {
@@ -254,32 +254,32 @@ class MainActivity : AppCompatActivity()
                 {
                     R.id.period_overall ->
                     {
-                        periodSelected(LastFmPeriodParams.Overall.tag, menuItem.title.toString())
+                        periodSelected(LastFmPeriodParams.Overall, menuItem.title.toString())
                     }
 
                     R.id.period_year ->
                     {
-                        periodSelected(LastFmPeriodParams.Year.tag, menuItem.title.toString())
+                        periodSelected(LastFmPeriodParams.Year, menuItem.title.toString())
                     }
 
                     R.id.period_half_year ->
                     {
-                        periodSelected(LastFmPeriodParams.HalfYear.tag, menuItem.title.toString())
+                        periodSelected(LastFmPeriodParams.HalfYear, menuItem.title.toString())
                     }
 
                     R.id.period_quarter ->
                     {
-                        periodSelected(LastFmPeriodParams.Quarter.tag, menuItem.title.toString())
+                        periodSelected(LastFmPeriodParams.Quarter, menuItem.title.toString())
                     }
 
                     R.id.period_month ->
                     {
-                        periodSelected(LastFmPeriodParams.Month.tag, menuItem.title.toString())
+                        periodSelected(LastFmPeriodParams.Month, menuItem.title.toString())
                     }
 
                     R.id.period_week ->
                     {
-                        periodSelected(LastFmPeriodParams.Week.tag, menuItem.title.toString())
+                        periodSelected(LastFmPeriodParams.Week, menuItem.title.toString())
                     }
                 }
                 true

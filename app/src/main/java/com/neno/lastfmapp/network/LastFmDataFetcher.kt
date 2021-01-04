@@ -3,6 +3,7 @@ package com.neno.lastfmapp.network
 import com.neno.lastfmapp.Result
 import com.neno.lastfmapp.network.dto.mapToRepository
 import com.neno.lastfmapp.network.utils.HttpResultConverter
+import com.neno.lastfmapp.network.utils.Keys.API_KEY
 import com.neno.lastfmapp.network.utils.RestError
 import com.neno.lastfmapp.repository.models.*
 import com.neno.lastfmapp.toQuery
@@ -96,11 +97,5 @@ class LastFmDataFetcher(
         {
             return Result.Error(RestError.NetworkError)
         }
-    }
-
-    companion object
-    {
-        //This should NOT be left here, hide the new api key further down the line
-        private const val API_KEY = "671b4f5b227191173106f00c4e581799"
     }
 }

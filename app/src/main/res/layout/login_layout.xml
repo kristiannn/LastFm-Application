@@ -41,11 +41,22 @@
         style="@style/EditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@id/etPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:autofillHints="@string/login_username_autoFill_hint"
+        android:hint="@string/login_username_autoFill_hint"/>
+
+    <EditText
+        android:id="@+id/etPassword"
+        style="@style/EditText.Password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@id/buttonLogin"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
         android:autofillHints="@string/login_username_autoFill_hint"
-        android:hint="@string/login_username_autoFill_hint"/>
+        android:hint="@string/login_password_autoFill_hint"/>
 
     <Button
         android:id="@+id/buttonLogin"

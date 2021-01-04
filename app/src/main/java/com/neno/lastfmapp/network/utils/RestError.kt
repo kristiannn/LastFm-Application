@@ -7,4 +7,6 @@ sealed class RestError(message: String) : Throwable(message)
     object NetworkError : RestError("Unable to gather results due to connectivity issues.")
 
     object NullResult : RestError("The request returned a null result.")
+
+    object MD5Null : RestError("There was an error generation the session key")
 }
