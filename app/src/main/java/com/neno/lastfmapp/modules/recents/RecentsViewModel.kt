@@ -34,6 +34,44 @@ class RecentsViewModel(
         getRecentTracks(true)
     }
 
+    fun scrobbleTracks(selectedTracks: List<RecentTrackWrapper>)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            _screenState.postValue(
+                ScreenState(
+                    isLoading = true,
+                    isListUpdating = false,
+                    errorMessage = null,
+                    scrobbles = null
+                )
+            )
+
+            var scrobbledTracks = 0
+            var failedScrobbles = 0
+
+            selectedTracks.forEach {
+                if (it.date != null)
+                {
+                    val response = lastFmRepository.scrobbleTrack(it.artist, it.track, it.date.toString(), it.album)
+
+                    if (response is Result.Success)
+                        scrobbledTracks++
+                    else if (response is Result.Error)
+                        failedScrobbles++
+                }
+            }
+
+            _screenState.postValue(
+                ScreenState(
+                    isLoading = false,
+                    isListUpdating = false,
+                    errorMessage = null,
+                    scrobbles = setOf(scrobbledTracks, failedScrobbles)
+                )
+            )
+        }
+    }
+
     fun getRecentTracks(isReload: Boolean)
     {
         viewModelScope.launch(Dispatchers.IO) {
@@ -41,7 +79,8 @@ class RecentsViewModel(
                 ScreenState(
                     isLoading = isReload,
                     isListUpdating = !isReload,
-                    errorMessage = null
+                    errorMessage = null,
+                    scrobbles = null
                 )
             )
 
@@ -68,7 +107,8 @@ class RecentsViewModel(
                     ScreenState(
                         isLoading = false,
                         isListUpdating = false,
-                        errorMessage = null
+                        errorMessage = null,
+                        scrobbles = null
                     )
                 )
             } else if (result is Result.Error)
@@ -77,7 +117,8 @@ class RecentsViewModel(
                     ScreenState(
                         isLoading = false,
                         isListUpdating = false,
-                        errorMessage = result.error.message
+                        errorMessage = result.error.message,
+                        scrobbles = null
                     )
                 )
             }
@@ -91,6 +132,7 @@ class RecentsViewModel(
     data class ScreenState(
         val isLoading: Boolean = false,
         val isListUpdating: Boolean = false,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
+        val scrobbles: Set<Int>? = null
     )
 }

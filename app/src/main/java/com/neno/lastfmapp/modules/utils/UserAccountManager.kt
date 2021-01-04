@@ -28,9 +28,14 @@ class UserAccountManager(
         }
     }
 
-    override fun getUser(): String = sharedPreferences.getString(PROFILE_NAME, "")!!.toString()
+    override fun getSessionKey(): String
+    {
+        return sharedPreferences.getString(PROFILE_SESSION_KEY, "")!!
+    }
 
-    override fun getProfilePicture(): String = sharedPreferences.getString(PROFILE_PICTURE, "")!!.toString()
+    override fun getUser(): String = sharedPreferences.getString(PROFILE_NAME, "")!!
+
+    override fun getProfilePicture(): String = sharedPreferences.getString(PROFILE_PICTURE, "")!!
 
     override fun setPeriodPreference(period: String)
     {

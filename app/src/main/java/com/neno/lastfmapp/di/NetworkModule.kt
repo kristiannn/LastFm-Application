@@ -1,5 +1,6 @@
 package com.neno.lastfmapp.di
 
+import com.neno.lastfmapp.modules.utils.AccountManager
 import com.neno.lastfmapp.network.*
 import com.neno.lastfmapp.network.utils.HttpResultConverter
 import com.neno.lastfmapp.network.utils.LastFmResultConverter
@@ -18,7 +19,7 @@ val networkModule = module {
 
     single<LastFmServiceOperations> { provideLastFmDataFetcher(get(), get()) }
 
-    single<LastFmAuthOperations> { provideLastFmAuth(get(), get()) }
+    single<LastFmAuthOperations> { provideLastFmAuth(get(), get(), get()) }
 }
 
 fun provideRetrofit(): Retrofit
@@ -44,7 +45,11 @@ fun provideLastFmDataFetcher(service: LastFmService, lastFmResultConverter: Http
     return LastFmDataFetcher(service, lastFmResultConverter)
 }
 
-fun provideLastFmAuth(service: LastFmAuthService, lastFmResultConverter: HttpResultConverter): LastFmAuth
+fun provideLastFmAuth(
+    service: LastFmAuthService,
+    lastFmResultConverter: HttpResultConverter,
+    accountManager: AccountManager
+): LastFmAuth
 {
-    return LastFmAuth(service, lastFmResultConverter)
+    return LastFmAuth(service, lastFmResultConverter, accountManager)
 }

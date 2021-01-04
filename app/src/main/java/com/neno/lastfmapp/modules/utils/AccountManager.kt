@@ -4,8 +4,6 @@ interface AccountManager
 {
     fun saveUser(username: String, pictureUrl: String)
 
-    fun saveSessionKeyAndPassword(password: String, sessionKey: String)
-
     fun getUser(): String
 
     fun getProfilePicture(): String
@@ -13,6 +11,10 @@ interface AccountManager
     fun setPeriodPreference(period: String)
 
     fun getPeriodPreference(): String
+
+    fun saveSessionKeyAndPassword(password: String, sessionKey: String)
+
+    fun getSessionKey(): String
 
     fun isUserLogged(): Boolean
 

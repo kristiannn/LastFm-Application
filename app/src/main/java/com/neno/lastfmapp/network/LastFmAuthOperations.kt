@@ -4,5 +4,9 @@ import com.neno.lastfmapp.Result
 
 interface LastFmAuthOperations
 {
-    suspend fun getSessionKey(method: String, username: String, password: String): Result<String>
+    suspend fun getSessionKey(params: Map<String, String>): Result<String>
+
+    suspend fun updateNowPlaying(params: Map<String, String>)
+
+    suspend fun scrobbleTrack(params: Map<String, String>): Result<Unit>
 }

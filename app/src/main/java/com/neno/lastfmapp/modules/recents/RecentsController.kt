@@ -78,7 +78,7 @@ class RecentsController(bundle: Bundle) : BaseController(bundle)
         recyclerView.layoutManager = layoutManager
 
         scrobbleButton.setOnClickListener {
-
+            viewModel.scrobbleTracks(recyclerAdapter.getSelectedItems())
         }
 
         recyclerAdapter = RecentsRecyclerAdapter(
@@ -173,6 +173,24 @@ class RecentsController(bundle: Bundle) : BaseController(bundle)
                 {
                     progressBar.visibility = View.GONE
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
+
+                    recyclerAdapter.removeLoadingItem()
+                    recentsActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                }
+                it.scrobbles != null ->
+                {
+                    val scrobbledTracks = it.scrobbles.first()
+                    val failedScrobbles = it.scrobbles.last()
+                    var errorMessage: String?
+
+                    errorMessage = if (failedScrobbles == 0) resources?.getString(R.string.scrobble_successful)
+                    else resources?.getString(R.string.scrobble_unsuccessful, failedScrobbles)
+
+                    //Not really, but would you really say you couldn't load the text? :D
+                    if (errorMessage.isNullOrEmpty()) errorMessage = "An unknown error occurred!"
+
+                    progressBar.visibility = View.GONE
+                    NotifyDialog(errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     recyclerAdapter.removeLoadingItem()
                     recentsActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)

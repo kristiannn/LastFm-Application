@@ -18,9 +18,16 @@ data class RecentArtistDto(
     val artist: String
 )
 
+data class RecentAlbumDto(
+    @SerializedName("#text")
+    val album: String
+)
+
 data class RecentTrackDto(
     @SerializedName("artist")
     val artist: RecentArtistDto,
+    @SerializedName("album")
+    val album: RecentAlbumDto?,
     @SerializedName("name")
     val track: String,
     @SerializedName("date")
@@ -33,6 +40,7 @@ fun RecentTrackDto.mapToRepository(): RecentTrackWrapper
 {
     return RecentTrackWrapper(
         artist = artist.artist,
+        album = album?.album,
         track = track,
         date = date?.unixTime,
         image = image[2].url

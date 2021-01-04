@@ -7,6 +7,7 @@ import com.neno.lastfmapp.network.LastFmAuthOperations
 import com.neno.lastfmapp.network.LastFmServiceOperations
 import com.neno.lastfmapp.network.utils.LastFmMethods
 import com.neno.lastfmapp.repository.models.*
+import com.neno.lastfmapp.repository.utils.LastFmQueryParams
 
 class LastFmDataSource(
     private val lastFmServiceOperations: LastFmServiceOperations,
@@ -118,7 +119,40 @@ class LastFmDataSource(
 
     override suspend fun getUserSession(username: String, password: String): Result<String>
     {
-        return lastFmAuthOperations.getSessionKey(LastFmMethods.GET_MOBILE_SESSION, username, password)
+        val params = mapOf<String, String>(
+            LastFmQueryParams.username to username,
+            LastFmQueryParams.password to password,
+            LastFmQueryParams.method to LastFmMethods.GET_MOBILE_SESSION
+        )
+
+        return lastFmAuthOperations.getSessionKey(params)
+    }
+
+    override suspend fun updateNowPlaying(artist: String, track: String, album: String?)
+    {
+        val params = mutableMapOf<String, String>(
+            LastFmQueryParams.artist to artist,
+            LastFmQueryParams.track to track,
+            LastFmQueryParams.method to LastFmMethods.NOW_PLAYING_SONG
+        )
+
+        if (!album.isNullOrEmpty()) params[LastFmQueryParams.album] = album
+
+        return lastFmAuthOperations.updateNowPlaying(params)
+    }
+
+    override suspend fun scrobbleTrack(artist: String, track: String, timestamp: String, album: String?): Result<Unit>
+    {
+        val params = mutableMapOf<String, String>(
+            LastFmQueryParams.artist to artist,
+            LastFmQueryParams.track to track,
+            LastFmQueryParams.timestamp to timestamp,
+            LastFmQueryParams.method to LastFmMethods.SCROBBLE_TRACK
+        )
+
+        if (!album.isNullOrEmpty()) params[LastFmQueryParams.album] = album
+
+        return lastFmAuthOperations.scrobbleTrack(params)
     }
 
     private suspend inline fun <Model> requestLists(

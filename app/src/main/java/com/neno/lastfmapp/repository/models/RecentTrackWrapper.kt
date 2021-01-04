@@ -7,6 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class RecentTrackWrapper(
     val track: String,
     val artist: String,
+    val album: String?,
     val date: Int?,
     val image: String
 ) : Parcelable
