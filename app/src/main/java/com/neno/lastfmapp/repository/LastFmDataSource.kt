@@ -26,11 +26,11 @@ class LastFmDataSource(
             loadFromDb = loadFromDb,
             dbRequest = { lastFmDatabase.getArtists(username, period, (page - 1) * RESULTS_LIMIT) },
             restRequest = { lastFmServiceOperations.getArtists(username, period, RESULTS_LIMIT, page) },
-            isUpToDateRequest = { isUpToDate(username) { lastFmDatabase.getUpdateTimeArtists(username) } },
+            isUpToDateRequest = { isUpToDate(username) { lastFmDatabase.getUpdateTimeArtists(username, period, page) } },
             updateDbRequest = {
                 it as Result.Success
                 lastFmDatabase.saveArtists(username, period, it.data)
-                lastFmDatabase.setUpdateTimeArtists(username)
+                lastFmDatabase.setUpdateTimeArtists(username, period, page)
             }
         )
 
@@ -45,11 +45,11 @@ class LastFmDataSource(
             loadFromDb = loadFromDb,
             dbRequest = { lastFmDatabase.getAlbums(username, period, (page - 1) * RESULTS_LIMIT) },
             restRequest = { lastFmServiceOperations.getAlbums(username, period, RESULTS_LIMIT, page) },
-            isUpToDateRequest = { isUpToDate(username) { lastFmDatabase.getUpdateTimeAlbums(username) } },
+            isUpToDateRequest = { isUpToDate(username) { lastFmDatabase.getUpdateTimeAlbums(username, period, page) } },
             updateDbRequest = {
                 it as Result.Success
                 lastFmDatabase.saveAlbums(username, period, it.data)
-                lastFmDatabase.setUpdateTimeAlbums(username)
+                lastFmDatabase.setUpdateTimeAlbums(username, period, page)
             }
         )
 
@@ -63,11 +63,11 @@ class LastFmDataSource(
         loadFromDb = loadFromDb,
         dbRequest = { lastFmDatabase.getTracks(username, period, (page - 1) * RESULTS_LIMIT) },
         restRequest = { lastFmServiceOperations.getTracks(username, period, RESULTS_LIMIT, page) },
-        isUpToDateRequest = { isUpToDate(username) { lastFmDatabase.getUpdateTimeTracks(username) } },
+        isUpToDateRequest = { isUpToDate(username) { lastFmDatabase.getUpdateTimeTracks(username, period, page) } },
         updateDbRequest = {
             it as Result.Success
             lastFmDatabase.saveTracks(username, period, it.data)
-            lastFmDatabase.setUpdateTimeTracks(username)
+            lastFmDatabase.setUpdateTimeTracks(username, period, page)
         }
     )
 

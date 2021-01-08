@@ -11,7 +11,9 @@ import com.neno.lastfmapp.database.entities.*
         ArtistEntity::class,
         AlbumEntity::class,
         TrackEntity::class,
-        UpdateTimesEntity::class
+        ArtistUpdateEntity::class,
+        AlbumUpdateEntity::class,
+        TrackUpdateEntity::class
     ],
     version = 1
 )
@@ -21,5 +23,7 @@ abstract class LastFmDatabase : RoomDatabase()
     abstract fun artistDao(): ArtistDao
     abstract fun albumDao(): AlbumDao
     abstract fun trackDao(): TrackDao
-    abstract fun updateTimesDao(): UpdateTimesDao
+    abstract fun artistUpdateDao(): ArtistUpdateDao
+    abstract fun albumUpdateDao(): AlbumUpdateDao
+    abstract fun trackUpdateDao(): TrackUpdateDao
 }

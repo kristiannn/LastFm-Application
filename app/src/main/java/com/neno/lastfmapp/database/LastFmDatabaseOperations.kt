@@ -18,11 +18,11 @@ interface LastFmDatabaseOperations
     suspend fun saveAlbums(username: String, period: String, albumsList: List<AlbumWrapper>)
     suspend fun saveTracks(username: String, period: String, tracksList: List<TrackWrapper>)
 
-    suspend fun getUpdateTimeArtists(username: String): Result<Int>
-    suspend fun getUpdateTimeAlbums(username: String): Result<Int>
-    suspend fun getUpdateTimeTracks(username: String): Result<Int>
+    suspend fun getUpdateTimeArtists(username: String, period: String, page: Int): Result<Int>
+    suspend fun getUpdateTimeAlbums(username: String, period: String, page: Int): Result<Int>
+    suspend fun getUpdateTimeTracks(username: String, period: String, page: Int): Result<Int>
 
-    suspend fun setUpdateTimeArtists(username: String)
-    suspend fun setUpdateTimeAlbums(username: String)
-    suspend fun setUpdateTimeTracks(username: String)
+    suspend fun setUpdateTimeArtists(username: String, period: String, page: Int)
+    suspend fun setUpdateTimeAlbums(username: String, period: String, page: Int)
+    suspend fun setUpdateTimeTracks(username: String, period: String, page: Int)
 }

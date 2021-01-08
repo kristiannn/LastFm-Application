@@ -93,7 +93,6 @@ class LastFmAuth(
         val apiSignature = md5(signatureString)
         sortedMap[API_SIG_PARAM] = apiSignature
 
-
         return sortedMap
     }
 

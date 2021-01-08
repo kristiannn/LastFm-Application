@@ -1,7 +1,9 @@
 package com.neno.lastfmapp.database
 
 import com.neno.lastfmapp.Result
-import com.neno.lastfmapp.database.entities.UpdateTimesEntity
+import com.neno.lastfmapp.database.entities.AlbumUpdateEntity
+import com.neno.lastfmapp.database.entities.ArtistUpdateEntity
+import com.neno.lastfmapp.database.entities.TrackUpdateEntity
 import com.neno.lastfmapp.database.entities.mapToRepository
 import com.neno.lastfmapp.repository.models.*
 
@@ -47,7 +49,6 @@ class DatabaseDataSource(private val lastFmDatabase: LastFmDatabase) : LastFmDat
     override suspend fun saveProfile(username: String, profileWrapper: ProfileWrapper)
     {
         lastFmDatabase.profileDao().insertProfile(profileWrapper.mapToDb())
-        lastFmDatabase.updateTimesDao().insertUpdateTimes(UpdateTimesEntity(username))
     }
 
     override suspend fun saveArtists(username: String, period: String, artistsList: List<ArtistWrapper>)
@@ -71,48 +72,60 @@ class DatabaseDataSource(private val lastFmDatabase: LastFmDatabase) : LastFmDat
         }
     }
 
-    override suspend fun getUpdateTimeArtists(username: String): Result<Int>
+    override suspend fun getUpdateTimeArtists(username: String, period: String, page: Int): Result<Int>
     {
-        lastFmDatabase.updateTimesDao().getUpdateTimeArtists(username).let {
+        lastFmDatabase.artistUpdateDao().getArtistsUpdateTime(username, period, page).let {
             return Result.Success(it)
         }
     }
 
-    override suspend fun getUpdateTimeAlbums(username: String): Result<Int>
+    override suspend fun getUpdateTimeAlbums(username: String, period: String, page: Int): Result<Int>
     {
-        lastFmDatabase.updateTimesDao().getUpdateTimeAlbums(username).let {
+        lastFmDatabase.albumUpdateDao().getAlbumsUpdateTime(username, period, page).let {
             return Result.Success(it)
         }
     }
 
-    override suspend fun getUpdateTimeTracks(username: String): Result<Int>
+    override suspend fun getUpdateTimeTracks(username: String, period: String, page: Int): Result<Int>
     {
-        lastFmDatabase.updateTimesDao().getUpdateTimeTracks(username).let {
+        lastFmDatabase.trackUpdateDao().getTracksUpdateTime(username, period, page).let {
             return Result.Success(it)
         }
     }
 
-    override suspend fun setUpdateTimeArtists(username: String)
+    override suspend fun setUpdateTimeArtists(username: String, period: String, page: Int)
     {
-        lastFmDatabase.updateTimesDao().setUpdateTimeArtists(
-            username = username,
-            newUnixTimestamp = (System.currentTimeMillis() / 1000).toInt()
+        lastFmDatabase.artistUpdateDao().insertUpdateTimes(
+            ArtistUpdateEntity(
+                user = username,
+                page = page,
+                period = period,
+                time = (System.currentTimeMillis() / 1000).toInt()
+            )
         )
     }
 
-    override suspend fun setUpdateTimeAlbums(username: String)
+    override suspend fun setUpdateTimeAlbums(username: String, period: String, page: Int)
     {
-        lastFmDatabase.updateTimesDao().setUpdateTimeAlbums(
-            username = username,
-            newUnixTimestamp = (System.currentTimeMillis() / 1000).toInt()
+        lastFmDatabase.albumUpdateDao().insertUpdateTimes(
+            AlbumUpdateEntity(
+                user = username,
+                page = page,
+                period = period,
+                time = (System.currentTimeMillis() / 1000).toInt()
+            )
         )
     }
 
-    override suspend fun setUpdateTimeTracks(username: String)
+    override suspend fun setUpdateTimeTracks(username: String, period: String, page: Int)
     {
-        lastFmDatabase.updateTimesDao().setUpdateTimeTracks(
-            username = username,
-            newUnixTimestamp = (System.currentTimeMillis() / 1000).toInt()
+        lastFmDatabase.trackUpdateDao().insertUpdateTimes(
+            TrackUpdateEntity(
+                user = username,
+                page = page,
+                period = period,
+                time = (System.currentTimeMillis() / 1000).toInt()
+            )
         )
     }
 }

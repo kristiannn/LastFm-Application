@@ -54,5 +54,5 @@
     <string name="now_playing">Now Playing</string>
     <string name="scrobble_songs">Click to scrobble: %1$d</string>
     <string name="scrobble_successful">All songs scrobbled successfully!</string>
-    <string name="scrobble_unsuccessful">%1$d failed to get scrobbled!/n You can try to scrobble them again, already scrobbled tracks will not get duplicated!</string>
+    <string name="scrobble_unsuccessful">%1$d track(s) failed to get scrobbled!\n You can try to scrobble them again, already scrobbled tracks will not get duplicated!</string>
 </resources>
