@@ -44,6 +44,11 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="TextStyle.Value">
+        <item name="android:gravity">end</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
     <style name="TextStyle.Counters">
         <item name="android:gravity">center</item>
     </style>

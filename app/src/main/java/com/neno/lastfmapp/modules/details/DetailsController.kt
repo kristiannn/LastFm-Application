@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.neno.lastfmapp.BaseController
 import com.neno.lastfmapp.R
 import com.neno.lastfmapp.modules.dialog.NotifyDialog
@@ -18,7 +17,6 @@ import com.neno.lastfmapp.modules.utils.BundleStrings
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-// TODO - this needs to be completely redone with recyclerview! It's too much of a mess like this
 class DetailsController(bundle: Bundle) : BaseController(bundle)
 {
     constructor(artist: String) : this(Bundle().apply {
@@ -38,24 +36,8 @@ class DetailsController(bundle: Bundle) : BaseController(bundle)
     private lateinit var detailsView: View
     private lateinit var detailsActivity: Activity
 
-    //This is a bit ridiculous and should become a recyclerview at some point.
-    private lateinit var coverIv: ImageView
-    private lateinit var artistLabelTv: TextView
-    private lateinit var artistValueTv: TextView
-    private lateinit var albumLabelTv: TextView
-    private lateinit var albumValueTv: TextView
-    private lateinit var trackLabelTv: TextView
-    private lateinit var trackValueTv: TextView
-    private lateinit var durationLabelTv: TextView
-    private lateinit var durationValueTv: TextView
-    private lateinit var publishedLabelTv: TextView
-    private lateinit var publishedValueTv: TextView
-    private lateinit var listenersLabelTv: TextView
-    private lateinit var listenersValueTv: TextView
-    private lateinit var playCountLabelTv: TextView
-    private lateinit var playCountValueTv: TextView
-    private lateinit var bioLabelTv: TextView
-    private lateinit var bioValueTv: TextView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerAdapter: DetailsRecyclerAdapter
     private lateinit var progressBar: ProgressBar
 
     private val artist by lazy { args.getString(BundleStrings.ARTIST_KEY) }
@@ -74,7 +56,7 @@ class DetailsController(bundle: Bundle) : BaseController(bundle)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View
     {
-        detailsView = inflater.inflate(R.layout.details_layout, container, false)
+        detailsView = inflater.inflate(R.layout.lists_layout_secondary, container, false)
 
         setupViews()
         setObservers()
@@ -85,24 +67,14 @@ class DetailsController(bundle: Bundle) : BaseController(bundle)
     private fun setupViews()
     {
         detailsActivity = activity!!
-        coverIv = detailsView.findViewById(R.id.ivCover)!!
         progressBar = detailsView.findViewById(R.id.progressBar)!!
-        artistLabelTv = detailsView.findViewById(R.id.tvArtistLabel)!!
-        artistValueTv = detailsView.findViewById(R.id.tvArtistValue)!!
-        albumLabelTv = detailsView.findViewById(R.id.tvAlbumLabel)!!
-        albumValueTv = detailsView.findViewById(R.id.tvAlbumValue)!!
-        trackLabelTv = detailsView.findViewById(R.id.tvTrackLabel)!!
-        trackValueTv = detailsView.findViewById(R.id.tvTrackValue)!!
-        durationLabelTv = detailsView.findViewById(R.id.tvDurationLabel)!!
-        durationValueTv = detailsView.findViewById(R.id.tvDurationValue)!!
-        publishedLabelTv = detailsView.findViewById(R.id.tvPublishedLabel)!!
-        publishedValueTv = detailsView.findViewById(R.id.tvPublishedValue)!!
-        listenersLabelTv = detailsView.findViewById(R.id.tvListenersLabel)!!
-        listenersValueTv = detailsView.findViewById(R.id.tvListenersValue)!!
-        playCountLabelTv = detailsView.findViewById(R.id.tvPlayCountLabel)!!
-        playCountValueTv = detailsView.findViewById(R.id.tvPlayCountValue)!!
-        bioLabelTv = detailsView.findViewById(R.id.tvBioLabel)!!
-        bioValueTv = detailsView.findViewById(R.id.tvBioValue)!!
+        recyclerView = detailsView.findViewById(R.id.recyclerView)!!
+
+        val layoutManager = LinearLayoutManager(detailsActivity)
+        recyclerView.layoutManager = layoutManager
+        recyclerAdapter = DetailsRecyclerAdapter()
+        recyclerView.adapter = recyclerAdapter
+        recyclerView.setHasFixedSize(true)
     }
 
     private fun setObservers()
@@ -112,67 +84,48 @@ class DetailsController(bundle: Bundle) : BaseController(bundle)
             {
                 it.artistDetails != null ->
                 {
-                    Glide.with(detailsView).load(it.artistDetails.image).into(coverIv)
+                    val list: List<LabelValue> = listOf(
+                        LabelValue(null, it.artistDetails.image, null),
+                        LabelValue(resources?.getString(R.string.artist), it.artistDetails.artist),
+                        LabelValue(resources?.getString(R.string.published), it.artistDetails.published ?: "-"),
+                        LabelValue(resources?.getString(R.string.listeners), it.artistDetails.listeners),
+                        LabelValue(resources?.getString(R.string.playCount), it.artistDetails.playCount),
+                        LabelValue(resources?.getString(R.string.bio), it.artistDetails.bio ?: "-", false)
+                    )
 
-                    albumLabelTv.visibility = View.GONE
-                    albumValueTv.visibility = View.GONE
-                    trackLabelTv.visibility = View.GONE
-                    trackValueTv.visibility = View.GONE
-                    durationLabelTv.visibility = View.GONE
-                    durationValueTv.visibility = View.GONE
-
-                    artistValueTv.text = it.artistDetails.artist
-                    listenersValueTv.text = it.artistDetails.listeners
-                    playCountValueTv.text = it.artistDetails.playCount
-
-                    if (it.artistDetails.published != null) publishedValueTv.text = it.artistDetails.published
-                    else publishedValueTv.text = "-"
-
-                    if (it.artistDetails.bio != null) bioValueTv.text = it.artistDetails.bio
-                    else bioValueTv.text = "-"
+                    recyclerAdapter.updateList(list)
                 }
 
                 it.albumDetails != null ->
                 {
-                    Glide.with(detailsView).load(it.albumDetails.image).into(coverIv)
+                    val list: List<LabelValue> = listOf(
+                        LabelValue(null, it.albumDetails.image, null),
+                        LabelValue(resources?.getString(R.string.artist), it.albumDetails.artist),
+                        LabelValue(resources?.getString(R.string.album), it.albumDetails.album),
+                        LabelValue(resources?.getString(R.string.published), it.albumDetails.published ?: "-"),
+                        LabelValue(resources?.getString(R.string.listeners), it.albumDetails.listeners),
+                        LabelValue(resources?.getString(R.string.playCount), it.albumDetails.playCount),
+                        LabelValue(resources?.getString(R.string.bio), it.albumDetails.bio ?: "-", false)
+                    )
 
-                    trackLabelTv.visibility = View.GONE
-                    trackValueTv.visibility = View.GONE
-                    durationLabelTv.visibility = View.GONE
-                    durationValueTv.visibility = View.GONE
-
-                    artistValueTv.text = it.albumDetails.artist
-                    albumValueTv.text = it.albumDetails.album
-                    listenersValueTv.text = it.albumDetails.listeners
-                    playCountValueTv.text = it.albumDetails.playCount
-
-                    if (it.albumDetails.published != null) publishedValueTv.text = it.albumDetails.published
-                    else publishedValueTv.text = "-"
-
-                    if (it.albumDetails.bio != null) bioValueTv.text = it.albumDetails.bio
-                    else bioValueTv.text = "-"
+                    recyclerAdapter.updateList(list)
                 }
 
                 it.trackDetails != null ->
                 {
-                    Glide.with(detailsView).load(it.trackDetails.image).into(coverIv)
+                    val list: List<LabelValue> = listOf(
+                        LabelValue(null, it.trackDetails.image, null),
+                        LabelValue(resources?.getString(R.string.artist), it.trackDetails.artist ?: "-"),
+                        LabelValue(resources?.getString(R.string.album), it.trackDetails.album ?: "-"),
+                        LabelValue(resources?.getString(R.string.track), it.trackDetails.track),
+                        LabelValue(resources?.getString(R.string.duration), it.trackDetails.duration),
+                        LabelValue(resources?.getString(R.string.published), it.trackDetails.published ?: "-"),
+                        LabelValue(resources?.getString(R.string.listeners), it.trackDetails.listeners),
+                        LabelValue(resources?.getString(R.string.playCount), it.trackDetails.playCount),
+                        LabelValue(resources?.getString(R.string.bio), it.trackDetails.bio ?: "-", false)
+                    )
 
-                    trackValueTv.text = it.trackDetails.track
-                    durationValueTv.text = it.trackDetails.duration
-                    listenersValueTv.text = it.trackDetails.listeners
-                    playCountValueTv.text = it.trackDetails.playCount
-
-                    if (it.trackDetails.artist != null) artistValueTv.text = it.trackDetails.artist
-                    else artistValueTv.text = "-"
-
-                    if (it.trackDetails.album != null) albumValueTv.text = it.trackDetails.album
-                    else albumValueTv.text = "-"
-
-                    if (it.trackDetails.published != null) publishedValueTv.text = it.trackDetails.published
-                    else publishedValueTv.text = "-"
-
-                    if (it.trackDetails.bio != null) bioValueTv.text = it.trackDetails.bio
-                    else bioValueTv.text = "-"
+                    recyclerAdapter.updateList(list)
                 }
             }
         })

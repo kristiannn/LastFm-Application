@@ -7,4 +7,5 @@
     <dimen name="recycler_item_height">64dp</dimen>
     <dimen name="scrobble_button_height">40dp</dimen>
     <dimen name="scrobble_button_bottom_margin">-40dp</dimen>
+    <dimen name="recycler_label_height">30dp</dimen>
 </resources>
