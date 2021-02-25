@@ -1,4 +1,4 @@
-package com.neno.lastfmapp.modules.albums
+package com.neno.lastfmapp.modules.charts.albums
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.loadRoundedImage
 import com.neno.lastfmapp.repository.models.AlbumWrapper
 
 class AlbumsRecyclerAdapter(
@@ -34,7 +33,7 @@ class AlbumsRecyclerAdapter(
     {
         return if (viewType == ALBUM_ITEM_TYPE)
         {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.tracks_albums_layout, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.albums_tracks_layout, parent, false)
 
             AlbumsRecyclerViewHolder(view)
         } else
@@ -54,10 +53,7 @@ class AlbumsRecyclerAdapter(
             holder.artistTextView.text = albumsList[position]!!.artist
             holder.albumTextView.text = albumsList[position]!!.album
             holder.scrobblesTextView.text = albumsList[position]!!.playCount.toString()
-
-            Glide.with(holder.itemView).load(albumsList[position]!!.image)
-                .transform(RoundedCorners(20))
-                .into(holder.coverImageView)
+            holder.coverImageView.loadRoundedImage(albumsList[position]!!.image)
 
             holder.itemView.setOnClickListener {
                 onAlbumItemClicked.invoke(

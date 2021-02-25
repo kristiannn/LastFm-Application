@@ -7,11 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.neno.lastfmapp.R
 import com.neno.lastfmapp.dp
-import com.neno.lastfmapp.modules.tracks.OnTrackItemClicked
+import com.neno.lastfmapp.loadRoundedImage
+import com.neno.lastfmapp.modules.charts.tracks.OnTrackItemClicked
 import com.neno.lastfmapp.modules.utils.TimeCalculator
 import com.neno.lastfmapp.repository.models.RecentTrackWrapper
 import org.koin.core.context.GlobalContext.get
@@ -43,7 +42,7 @@ class RecentsRecyclerAdapter(
     {
         return if (viewType == TRACK_ITEM_TYPE)
         {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.tracks_albums_layout, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.albums_tracks_layout, parent, false)
 
             TracksRecyclerViewHolder(view)
         } else
@@ -70,9 +69,7 @@ class RecentsRecyclerAdapter(
                 if (tracksList[position]!!.date != null) timeCalculator.convertToTime(tracksList[position]!!.date!!)
                 else holder.itemView.resources.getString(R.string.now_playing)
 
-            Glide.with(holder.itemView).load(tracksList[position]!!.image)
-                .transform(RoundedCorners(20))
-                .into(holder.coverImageView)
+            holder.coverImageView.loadRoundedImage(tracksList[position]!!.image)
 
             holder.itemView.setOnClickListener {
                 if (selectionMode)

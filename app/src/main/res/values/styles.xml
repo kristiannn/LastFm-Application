@@ -85,13 +85,17 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
-    <style name="Button.TopRounded">
+    <style name="Button.Rounded">
         <item name="android:background">@drawable/scrobble_button_drawable</item>
     </style>
 
     <!--Layout styles-->
     <style name="DialogStyle">
         <item name="android:background">@drawable/dialog_window</item>
+    </style>
+
+    <style name="TabLayoutStyle">
+        <item name="tabIndicatorColor">@color/colorBlack</item>
     </style>
 
 </resources>

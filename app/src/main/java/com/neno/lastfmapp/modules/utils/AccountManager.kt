@@ -12,7 +12,7 @@ interface AccountManager
 
     fun getPeriodPreference(): String
 
-    fun saveSessionKeyAndPassword(password: String, sessionKey: String)
+    fun saveSessionKey(password: String, sessionKey: String)
 
     fun getSessionKey(): String
 

@@ -24,10 +24,11 @@
 
     <Button
         android:id="@+id/buttonScrobble"
-        style="@style/Button.TopRounded"
-        android:layout_width="match_parent"
+        style="@style/Button.Rounded"
+        android:layout_width="@dimen/scrobble_button_width"
         android:layout_height="@dimen/scrobble_button_height"
-        android:layout_gravity="bottom"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="@dimen/scrobble_button_end_margin"
         android:layout_marginBottom="@dimen/scrobble_button_bottom_margin"
         android:visibility="gone"/>
 

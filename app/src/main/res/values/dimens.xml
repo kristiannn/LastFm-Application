@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    // Navigation Header
+    <dimen name="nav_header_horizontal_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">186dp</dimen>
+
+    // Recycler Items
     <dimen name="recycler_item_height">64dp</dimen>
-    <dimen name="scrobble_button_height">40dp</dimen>
-    <dimen name="scrobble_button_bottom_margin">-40dp</dimen>
-    <dimen name="recycler_label_height">30dp</dimen>
+
+    // Scrobble Button
+    <dimen name="scrobble_button_height">64dp</dimen>
+    <dimen name="scrobble_button_width">136dp</dimen>
+    <dimen name="scrobble_button_end_margin">-136dp</dimen>
+    <dimen name="scrobble_button_bottom_margin">116dp</dimen>
+
+    // Periods Button
+    <dimen name="periods_button_width">136dp</dimen>
+
+    // Label Text View
+    <dimen name="label_text_view_height">30dp</dimen>
+
+    // Toolbar
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="loader_to_toolbar_margin">50dp</dimen>
+
+    // App Image Views. No point of making integer file just for this..
+    <integer name="rounded_corner_radius">20</integer>
 </resources>

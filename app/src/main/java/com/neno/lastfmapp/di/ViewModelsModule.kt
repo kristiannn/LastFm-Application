@@ -1,12 +1,12 @@
 package com.neno.lastfmapp.di
 
-import com.neno.lastfmapp.modules.albums.AlbumsViewModel
-import com.neno.lastfmapp.modules.artists.ArtistsViewModel
+import com.neno.lastfmapp.modules.charts.albums.AlbumsViewModel
+import com.neno.lastfmapp.modules.charts.artists.ArtistsViewModel
 import com.neno.lastfmapp.modules.details.DetailsViewModel
 import com.neno.lastfmapp.modules.friends.FriendsViewModel
 import com.neno.lastfmapp.modules.login.LoginViewModel
 import com.neno.lastfmapp.modules.recents.RecentsViewModel
-import com.neno.lastfmapp.modules.tracks.TracksViewModel
+import com.neno.lastfmapp.modules.charts.tracks.TracksViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

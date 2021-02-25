@@ -1,6 +1,5 @@
-package com.neno.lastfmapp.modules.artists
+package com.neno.lastfmapp.modules.charts.artists
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,81 +7,72 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
-import com.neno.lastfmapp.BaseController
+import com.neno.lastfmapp.MainActivity
 import com.neno.lastfmapp.R
-import com.neno.lastfmapp.modules.details.DetailsController
+import com.neno.lastfmapp.modules.details.DetailsFragment
 import com.neno.lastfmapp.modules.dialog.NotifyDialog
 import com.neno.lastfmapp.modules.utils.BundleStrings
+import com.neno.lastfmapp.modules.utils.fragments.addFragment
+import com.neno.lastfmapp.setGone
+import com.neno.lastfmapp.setVisible
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class ArtistsController(bundle: Bundle) : BaseController(bundle)
+class ArtistsFragment : Fragment()
 {
-    constructor(username: String, period: String) : this(Bundle().apply {
-        putString(BundleStrings.USERNAME_KEY, username)
-        putString(BundleStrings.PERIOD_KEY, period)
-    })
-
-    private lateinit var artistsView: View
-    private lateinit var artistsActivity: Activity
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerAdapter: ArtistsRecyclerAdapter
     private lateinit var progressBar: ProgressBar
     private lateinit var swipeContainer: SwipeRefreshLayout
 
-    private val username by lazy { args.getString(BundleStrings.USERNAME_KEY) }
-    private val period by lazy { args.getString(BundleStrings.PERIOD_KEY) }
+    private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }
+    private val period by lazy { arguments?.getString(BundleStrings.PERIOD_KEY) }
 
     private val viewModel: ArtistsViewModel by viewModel { parametersOf(username, period) }
 
-    override fun toolbarTitle(): String? = username
-
-    override fun toolbarVisible(): Boolean = true
-
-    override fun periodsVisible(): Boolean = true
-
-    override fun currentNavigationUser(): String? = username
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        artistsView = inflater.inflate(R.layout.lists_layout, container, false)
-
-        setupViews()
-        setObservers()
-
-        return artistsView
+        return inflater.inflate(R.layout.lists_layout, container, false)
     }
 
-    private fun setupViews()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
-        artistsActivity = activity!!
-        recyclerView = artistsView.findViewById(R.id.recyclerView)!!
-        progressBar = artistsView.findViewById(R.id.progressBar)!!
-        swipeContainer = artistsView.findViewById(R.id.swipeContainer)!!
+        super.onViewCreated(view, savedInstanceState)
+
+        setupViews(view)
+        setObservers()
+    }
+
+    private fun setupViews(view: View)
+    {
+        recyclerView = view.findViewById(R.id.recyclerView)
+        progressBar = view.findViewById(R.id.progressBar)
+        swipeContainer = view.findViewById(R.id.swipeContainer)
 
         swipeContainer.setOnRefreshListener {
             viewModel.getArtists(true)
             swipeContainer.isRefreshing = false
         }
 
-        val layoutManager = LinearLayoutManager(artistsActivity)
+        val layoutManager = LinearLayoutManager(activity)
 
         recyclerView.layoutManager = layoutManager
         recyclerAdapter = ArtistsRecyclerAdapter(
             artistsList = viewModel.artistsListState.value!!.artistsList,
-            onArtistItemClicked = {
-                router.pushController(
-                    RouterTransaction.with(
-                        DetailsController(artist = it)
-                    )
-                        .popChangeHandler(HorizontalChangeHandler())
-                        .pushChangeHandler(HorizontalChangeHandler())
-                )
+            onArtistItemClicked = { artist ->
+
+                DetailsFragment().also {
+                    val bundle = Bundle()
+                    bundle.putString(BundleStrings.USERNAME_KEY, username)
+                    bundle.putString(BundleStrings.ARTIST_KEY, artist)
+                    it.arguments = bundle
+
+                    (activity as MainActivity).supportFragmentManager.addFragment(R.id.fragment_container, it)
+                }
             })
         recyclerView.adapter = recyclerAdapter
         recyclerView.setHasFixedSize(true)
@@ -109,42 +99,42 @@ class ArtistsController(bundle: Bundle) : BaseController(bundle)
 
     private fun setObservers()
     {
-        viewModel.artistsListState.observe(this, {
+        viewModel.artistsListState.observe(viewLifecycleOwner, {
             recyclerAdapter.updateList(it.artistsList)
         })
 
-        viewModel.screenState.observe(this, {
+        viewModel.screenState.observe(viewLifecycleOwner, {
             when
             {
                 it.isLoading ->
                 {
-                    progressBar.visibility = View.VISIBLE
+                    progressBar.setVisible()
 
-                    artistsActivity.window.setFlags(
+                    activity?.window?.setFlags(
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                     )
                 }
                 it.isListUpdating ->
                 {
-                    progressBar.visibility = View.GONE
+                    progressBar.setGone()
 
-                    artistsActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
                 it.errorMessage != null ->
                 {
-                    progressBar.visibility = View.GONE
+                    progressBar.setGone()
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     recyclerAdapter.removeLoadingItem()
-                    artistsActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
                 else ->
                 {
-                    progressBar.visibility = View.GONE
+                    progressBar.setGone()
 
                     recyclerAdapter.removeLoadingItem()
-                    artistsActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
             }
         })

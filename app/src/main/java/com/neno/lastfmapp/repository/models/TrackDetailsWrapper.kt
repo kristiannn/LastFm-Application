@@ -9,5 +9,6 @@ data class TrackDetailsWrapper(
     val listeners: String,
     val playCount: String,
     val published: String?,
-    val bio: String?
+    val bio: String?,
+    val topTags: List<String>?
 )

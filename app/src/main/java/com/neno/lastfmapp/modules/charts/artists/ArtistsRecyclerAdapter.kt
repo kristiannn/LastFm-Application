@@ -1,4 +1,4 @@
-package com.neno.lastfmapp.modules.artists
+package com.neno.lastfmapp.modules.charts.artists
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.loadRoundedImage
 import com.neno.lastfmapp.repository.models.ArtistWrapper
 
 class ArtistsRecyclerAdapter(
@@ -51,10 +50,7 @@ class ArtistsRecyclerAdapter(
             holder.positionTextView.text = (position + 1).toString()
             holder.artistTextView.text = artistsList[position]!!.artist
             holder.scrobblesTextView.text = artistsList[position]!!.playCount.toString()
-
-            Glide.with(holder.itemView).load(artistsList[position]!!.image)
-                .transform(RoundedCorners(20))
-                .into(holder.coverImageView)
+            holder.coverImageView.loadRoundedImage(artistsList[position]!!.image)
 
             holder.itemView.setOnClickListener { onArtistItemClicked.invoke(artistsList[position]!!.artist) }
         }

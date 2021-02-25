@@ -1,4 +1,4 @@
-package com.neno.lastfmapp.modules.albums
+package com.neno.lastfmapp.modules.charts.albums
 
 import androidx.recyclerview.widget.DiffUtil
 import com.neno.lastfmapp.repository.models.AlbumWrapper

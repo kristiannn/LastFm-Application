@@ -1,4 +1,4 @@
-package com.neno.lastfmapp.modules.artists
+package com.neno.lastfmapp.modules.charts.albums
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neno.lastfmapp.Result
 import com.neno.lastfmapp.repository.LastFmRepository
-import com.neno.lastfmapp.repository.models.ArtistWrapper
+import com.neno.lastfmapp.repository.models.AlbumWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class ArtistsViewModel(
+class AlbumsViewModel(
     private val username: String,
     private val period: String,
     private val lastFmRepository: LastFmRepository
@@ -20,28 +20,26 @@ class ArtistsViewModel(
     private var page = 0
 
     private val _screenState = MutableLiveData<ScreenState>()
-    private val _artistsListState = MutableLiveData<ArtistsListState>()
+    private val _albumsListState = MutableLiveData<AlbumsListState>()
 
     val screenState: LiveData<ScreenState>
         get() = _screenState
 
-    val artistsListState: LiveData<ArtistsListState>
-        get() = _artistsListState
+    val albumsListState: LiveData<AlbumsListState>
+        get() = _albumsListState
 
     init
     {
-        _artistsListState.value = ArtistsListState()
+        _albumsListState.value = AlbumsListState()
         _screenState.value = ScreenState()
 
         loadInitialData()
-
-        getArtists(isReload = true)
+        getAlbums(isReload = true)
     }
 
     private fun loadInitialData()
     {
         viewModelScope.launch(Dispatchers.IO) {
-
             _screenState.postValue(
                 ScreenState(
                     isLoading = true,
@@ -50,7 +48,7 @@ class ArtistsViewModel(
                 )
             )
 
-            val result = lastFmRepository.getArtists(
+            val result = lastFmRepository.getAlbums(
                 username = username,
                 period = period,
                 page = page,
@@ -59,13 +57,14 @@ class ArtistsViewModel(
 
             if (result is Result.Success)
             {
-                delay(350) //Wait for animations to finish, because populating this is costly
-                _artistsListState.postValue(ArtistsListState(result.data))
+                // Since we're loading the 3 tabs at the same time, this makes the animations a lot smoother
+                delay(300)
+                _albumsListState.postValue(AlbumsListState(result.data))
             }
         }
     }
 
-    fun getArtists(isReload: Boolean)
+    fun getAlbums(isReload: Boolean)
     {
         viewModelScope.launch(Dispatchers.IO) {
             _screenState.postValue(
@@ -78,7 +77,7 @@ class ArtistsViewModel(
 
             if (isReload) page = 1 else page++
 
-            val result = lastFmRepository.getArtists(
+            val result = lastFmRepository.getAlbums(
                 username = username,
                 period = period,
                 page = page,
@@ -87,28 +86,15 @@ class ArtistsViewModel(
 
             if (result is Result.Success)
             {
-                if (result.data.isEmpty())
-                {
-                    _screenState.postValue(
-                        ScreenState(
-                            isLoading = false,
-                            isListUpdating = false,
-                            errorMessage = null
-                        )
-                    )
-
-                    return@launch
-                }
-
-                val newArtistsList: List<ArtistWrapper> = if (isReload)
+                val newAlbumsList: List<AlbumWrapper> = if (isReload)
                 {
                     result.data
                 } else
                 {
-                    _artistsListState.value!!.artistsList + result.data
+                    albumsListState.value!!.albumsList + result.data
                 }
 
-                _artistsListState.postValue(ArtistsListState(newArtistsList))
+                _albumsListState.postValue(AlbumsListState(newAlbumsList))
 
                 _screenState.postValue(
                     ScreenState(
@@ -130,8 +116,8 @@ class ArtistsViewModel(
         }
     }
 
-    data class ArtistsListState(
-        val artistsList: List<ArtistWrapper> = listOf()
+    data class AlbumsListState(
+        val albumsList: List<AlbumWrapper> = listOf()
     )
 
     data class ScreenState(

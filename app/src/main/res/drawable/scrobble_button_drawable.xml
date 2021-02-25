@@ -5,14 +5,14 @@
         android:id="@android:id/mask"
         android:gravity="center">
         <shape android:shape="rectangle">
-            <corners android:topLeftRadius="8dp"  android:topRightRadius="8dp"/>
+            <corners android:radius="8dp"/>
             <solid android:color="?colorPrimaryDark"/>
         </shape>
     </item>
 
     <item>
         <shape>
-            <corners android:topLeftRadius="8dp"  android:topRightRadius="8dp"/>
+            <corners android:radius="8dp"/>
             <solid android:color="?colorPrimary"/>
             <stroke android:width="0.7dp"/>
         </shape>

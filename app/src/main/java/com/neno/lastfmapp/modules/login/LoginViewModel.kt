@@ -64,7 +64,7 @@ class LoginViewModel(
 
             if (result is Result.Success)
             {
-                accountManager.saveSessionKeyAndPassword(password, result.data)
+                accountManager.saveSessionKey(password, result.data)
 
                 val profileResult = lastFmRepository.getProfile(username)
 

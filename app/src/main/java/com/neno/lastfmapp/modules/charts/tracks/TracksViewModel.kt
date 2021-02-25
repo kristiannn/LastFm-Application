@@ -1,4 +1,4 @@
-package com.neno.lastfmapp.modules.albums
+package com.neno.lastfmapp.modules.charts.tracks
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neno.lastfmapp.Result
 import com.neno.lastfmapp.repository.LastFmRepository
-import com.neno.lastfmapp.repository.models.AlbumWrapper
+import com.neno.lastfmapp.repository.models.TrackWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class AlbumsViewModel(
+class TracksViewModel(
     private val username: String,
     private val period: String,
     private val lastFmRepository: LastFmRepository
@@ -20,21 +20,21 @@ class AlbumsViewModel(
     private var page = 0
 
     private val _screenState = MutableLiveData<ScreenState>()
-    private val _albumsListState = MutableLiveData<AlbumsListState>()
+    private val _tracksListState = MutableLiveData<TracksListState>()
 
     val screenState: LiveData<ScreenState>
         get() = _screenState
 
-    val albumsListState: LiveData<AlbumsListState>
-        get() = _albumsListState
+    val tracksListState: LiveData<TracksListState>
+        get() = _tracksListState
 
     init
     {
-        _albumsListState.value = AlbumsListState()
+        _tracksListState.value = TracksListState()
         _screenState.value = ScreenState()
 
         loadInitialData()
-        getAlbums(true)
+        getTracks(isReload = true)
     }
 
     private fun loadInitialData()
@@ -48,7 +48,7 @@ class AlbumsViewModel(
                 )
             )
 
-            val result = lastFmRepository.getAlbums(
+            val result = lastFmRepository.getTracks(
                 username = username,
                 period = period,
                 page = page,
@@ -57,13 +57,14 @@ class AlbumsViewModel(
 
             if (result is Result.Success)
             {
-                delay(350) //Wait for animations to finish, because populating this is costly
-                _albumsListState.postValue(AlbumsListState(result.data))
+                // Since we're loading the 3 tabs at the same time, this makes the animations a lot smoother
+                delay(300)
+                _tracksListState.postValue(TracksListState(result.data))
             }
         }
     }
 
-    fun getAlbums(isReload: Boolean)
+    fun getTracks(isReload: Boolean)
     {
         viewModelScope.launch(Dispatchers.IO) {
             _screenState.postValue(
@@ -76,7 +77,7 @@ class AlbumsViewModel(
 
             if (isReload) page = 1 else page++
 
-            val result = lastFmRepository.getAlbums(
+            val result = lastFmRepository.getTracks(
                 username = username,
                 period = period,
                 page = page,
@@ -85,15 +86,15 @@ class AlbumsViewModel(
 
             if (result is Result.Success)
             {
-                val newAlbumsList: List<AlbumWrapper> = if (isReload)
+                val newTracksList: List<TrackWrapper> = if (isReload)
                 {
                     result.data
                 } else
                 {
-                    albumsListState.value!!.albumsList + result.data
+                    _tracksListState.value!!.tracksList + result.data
                 }
 
-                _albumsListState.postValue(AlbumsListState(newAlbumsList))
+                _tracksListState.postValue(TracksListState(newTracksList))
 
                 _screenState.postValue(
                     ScreenState(
@@ -115,8 +116,8 @@ class AlbumsViewModel(
         }
     }
 
-    data class AlbumsListState(
-        val albumsList: List<AlbumWrapper> = listOf()
+    data class TracksListState(
+        val tracksList: List<TrackWrapper> = listOf()
     )
 
     data class ScreenState(

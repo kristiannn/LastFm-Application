@@ -1,4 +1,4 @@
-package com.neno.lastfmapp.modules.artists
+package com.neno.lastfmapp.modules.charts.artists
 
 import androidx.recyclerview.widget.DiffUtil
 import com.neno.lastfmapp.repository.models.ArtistWrapper

@@ -7,9 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.loadRoundedImage
 import com.neno.lastfmapp.repository.models.ProfileWrapper
 
 class FriendsRecyclerAdapter(
@@ -35,10 +34,7 @@ class FriendsRecyclerAdapter(
     {
         holder.usernameTextView.text = friendsList[position].username
         holder.scrobblesTextView.text = friendsList[position].totalScrobbles.toString()
-
-        Glide.with(holder.itemView).load(friendsList[position].profilePicture)
-            .transform(RoundedCorners(20))
-            .into(holder.profilePictureImageView)
+        holder.profilePictureImageView.loadRoundedImage(friendsList[position].profilePicture)
 
         holder.itemView.setOnClickListener { onFriendsItemClicked.invoke(friendsList[position].username) }
     }

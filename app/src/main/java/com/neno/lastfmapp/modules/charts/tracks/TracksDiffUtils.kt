@@ -1,4 +1,4 @@
-package com.neno.lastfmapp.modules.tracks
+package com.neno.lastfmapp.modules.charts.tracks
 
 import androidx.recyclerview.widget.DiffUtil
 import com.neno.lastfmapp.repository.models.TrackWrapper

@@ -24,9 +24,7 @@ class NotifyDialog(private val message: String) : DialogFragment()
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         textView.text = message
 
-        button.setOnClickListener {
-            dialog.dismiss()
-        }
+        button.setOnClickListener { dialog.dismiss() }
 
         return view
     }

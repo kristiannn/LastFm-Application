@@ -3,7 +3,6 @@ package com.neno.lastfmapp
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.PopupMenu
@@ -12,107 +11,96 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.view.GravityCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import com.bluelinelabs.conductor.*
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.navigation.NavigationView
-import com.neno.lastfmapp.modules.albums.AlbumsController
-import com.neno.lastfmapp.modules.artists.ArtistsController
-import com.neno.lastfmapp.modules.friends.FriendsController
-import com.neno.lastfmapp.modules.login.LoginController
-import com.neno.lastfmapp.modules.recents.RecentsController
-import com.neno.lastfmapp.modules.tracks.TracksController
-import com.neno.lastfmapp.modules.utils.AccountManager
+import com.google.android.material.tabs.TabLayout
+import com.neno.lastfmapp.modules.charts.ChartsFragment
+import com.neno.lastfmapp.modules.friends.FriendsFragment
+import com.neno.lastfmapp.modules.login.LoginFragment
+import com.neno.lastfmapp.modules.recents.RecentsFragment
+import com.neno.lastfmapp.modules.utils.*
+import com.neno.lastfmapp.modules.utils.fragments.*
 import com.neno.lastfmapp.network.utils.LastFmPeriodParams
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity()
 {
-    private lateinit var container: ViewGroup
-    private lateinit var router: Router
-
-    private lateinit var drawer: DrawerLayout
     private lateinit var drawerToggle: ActionBarDrawerToggle
-    private lateinit var navigationView: NavigationView
-    private lateinit var navigationHeader: View
-    private lateinit var navigationUsername: TextView
-    private lateinit var navigationProfilePicture: ImageView
-    private lateinit var periodsButton: Button
-
     private var currentUser: String? = null
+
+    private val drawer: DrawerLayout by lazy { findViewById(R.id.drawer_layout) }
+    private val navigationView: NavigationView by lazy { findViewById(R.id.nav_view) }
+    private val navigationHeader: View by lazy { navigationView.getHeaderView(0) }
+    private val navigationUsername: TextView by lazy { navigationHeader.findViewById(R.id.tvUsername) }
+    private val navigationProfilePicture: ImageView by lazy { navigationHeader.findViewById(R.id.ivProfilePicture) }
+    private val periodsButton: Button by lazy { findViewById(R.id.buttonPeriods) }
     private val accountManager: AccountManager by inject()
+
+    val tabsLayout: TabLayout by lazy { findViewById(R.id.tabLayout) }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         setupNavigationDrawer()
         updateNavigationHeader()
         setupPeriodSelector()
 
-        container = findViewById(R.id.conductor_layout)
+        supportFragmentManager.addOnBackStackChangedListener {
+            val lastFragment = supportFragmentManager.fragments.last()
 
-        router = Conductor.attachRouter(this, container, savedInstanceState)
-        if (!router.hasRootController())
-        {
-            if (accountManager.isUserLogged())
+            currentUser = lastFragment.arguments?.getString(BundleStrings.USERNAME_KEY)
+
+            if (lastFragment is BaseFragment) lastFragment.updateSettings()
+
+            if (lastFragment is ListsFragment)
             {
-                router.setRoot(
-                    RouterTransaction.with(
-                        ArtistsController(
-                            username = accountManager.getUser(),
-                            period = getSelectedPeriod()
-                        )
-                    )
-                )
-            } else
+                val icon = DrawerArrowDrawable(this@MainActivity)
+
+                val animator = ValueAnimator.ofFloat(1f, 0f)
+                animator.duration = 300
+                animator.addUpdateListener { animation -> icon.progress = animation.animatedValue as Float }
+                animator.start()
+
+                animator.doOnEnd { drawerToggle.syncState() }
+
+                toolbar.navigationIcon = icon
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            } else if (lastFragment is SecondaryFragment)
             {
-                router.setRoot(RouterTransaction.with(LoginController()))
+                val icon = DrawerArrowDrawable(this@MainActivity)
+
+                val animator = ValueAnimator.ofFloat(0f, 1f)
+                animator.duration = 300
+                animator.addUpdateListener { animation -> icon.progress = animation.animatedValue as Float }
+                animator.start()
+
+                toolbar.navigationIcon = icon
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
         }
 
-        router.addChangeListener(object : ControllerChangeHandler.ControllerChangeListener
+        if (accountManager.isUserLogged())
         {
-            override fun onChangeCompleted(
-                to: Controller?,
-                from: Controller?,
-                isPush: Boolean,
-                container: ViewGroup,
-                handler: ControllerChangeHandler
-            )
-            {
-                if (router.backstackSize % 2 > 0)
-                {
-                    val icon = DrawerArrowDrawable(this@MainActivity)
+            ChartsFragment().also {
+                val bundle = Bundle()
+                bundle.putString(BundleStrings.USERNAME_KEY, accountManager.getUser())
+                bundle.putString(BundleStrings.PERIOD_KEY, getSelectedPeriod())
+                it.arguments = bundle
 
-                    val animator = ValueAnimator.ofFloat(1f, 0f)
-                    animator.duration = 600
-                    animator.addUpdateListener { animation -> icon.progress = animation.animatedValue as Float }
-                    animator.start()
-
-                    animator.doOnEnd { drawerToggle.syncState() }
-
-                    toolbar.navigationIcon = icon
-                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-                } else
-                {
-                    val icon = DrawerArrowDrawable(this@MainActivity)
-
-                    val animator = ValueAnimator.ofFloat(0f, 1f)
-                    animator.duration = 600
-                    animator.addUpdateListener { animation -> icon.progress = animation.animatedValue as Float }
-                    animator.start()
-
-                    toolbar.navigationIcon = icon
-                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-                }
+                supportFragmentManager.setRootFragment(R.id.fragment_container, it)
             }
-        })
+        } else
+        {
+            LoginFragment().also { supportFragmentManager.setRootFragment(R.id.fragment_container, it) }
+        }
     }
 
     override fun onBackPressed()
@@ -120,7 +108,7 @@ class MainActivity : AppCompatActivity()
         if (drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START)
-        } else if (!router.handleBack())
+        } else
         {
             super.onBackPressed()
         }
@@ -128,12 +116,6 @@ class MainActivity : AppCompatActivity()
 
     private fun setupNavigationDrawer()
     {
-        drawer = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
-        navigationHeader = navigationView.getHeaderView(0)
-        navigationUsername = navigationHeader.findViewById(R.id.tvUsername)
-        navigationProfilePicture = navigationHeader.findViewById(R.id.ivProfilePicture)
-
         drawerToggle = ActionBarDrawerToggle(
             this,
             drawer,
@@ -147,80 +129,59 @@ class MainActivity : AppCompatActivity()
 
         toolbar.setNavigationOnClickListener {
 
-            if (router.backstackSize % 2 > 0)
+            if (supportFragmentManager.fragments.last() is ListsFragment)
             {
                 drawer.openDrawer(navigationView)
             } else
             {
-                router.handleBack()
+                onBackPressed()
             }
         }
+
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId)
             {
-                R.id.nav_artists ->
+                R.id.nav_charts ->
                 {
-                    router.replaceTopController(
-                        RouterTransaction.with(
-                            ArtistsController(
-                                username = currentUser!!,
-                                period = getSelectedPeriod()
-                            )
-                        )
-                            .popChangeHandler(HorizontalChangeHandler())
-                    )
-                }
+                    if (supportFragmentManager.fragments.last() !is ListsFragment)
+                    {
+                        ChartsFragment().also {
+                            val bundle = Bundle()
+                            bundle.putString(BundleStrings.USERNAME_KEY, getCurrentNavUser())
+                            bundle.putString(BundleStrings.PERIOD_KEY, getSelectedPeriod())
+                            it.arguments = bundle
 
-                R.id.nav_albums ->
-                {
-                    router.replaceTopController(
-                        RouterTransaction.with(
-                            AlbumsController(
-                                username = currentUser!!,
-                                period = getSelectedPeriod()
-                            )
-                        )
-                            .popChangeHandler(HorizontalChangeHandler())
-                    )
-                }
-
-                R.id.nav_tracks ->
-                {
-                    router.replaceTopController(
-                        RouterTransaction.with(
-                            TracksController(
-                                username = currentUser!!,
-                                period = getSelectedPeriod()
-                            )
-                        )
-                            .popChangeHandler(HorizontalChangeHandler())
-                    )
+                            supportFragmentManager.addFragment(R.id.fragment_container, it)
+                        }
+                    }
                 }
 
                 R.id.nav_friends ->
                 {
-                    router.pushController(
-                        RouterTransaction.with(FriendsController(currentUser!!))
-                            .popChangeHandler(HorizontalChangeHandler())
-                    )
+                    FriendsFragment().also {
+                        val bundle = Bundle()
+                        bundle.putString(BundleStrings.USERNAME_KEY, getCurrentNavUser())
+                        it.arguments = bundle
+
+                        supportFragmentManager.addFragment(R.id.fragment_container, it)
+                    }
                 }
 
                 R.id.nav_recently_played ->
                 {
-                    router.replaceTopController(
-                        RouterTransaction.with(RecentsController(currentUser!!))
-                            .popChangeHandler(HorizontalChangeHandler())
-                    )
+                    RecentsFragment().also {
+                        val bundle = Bundle()
+                        bundle.putString(BundleStrings.USERNAME_KEY, getCurrentNavUser())
+                        it.arguments = bundle
+
+                        supportFragmentManager.addFragment(R.id.fragment_container, it)
+                    }
                 }
 
                 R.id.nav_logout ->
                 {
                     accountManager.logoutUser()
-
-                    router.setRoot(
-                        RouterTransaction.with(LoginController())
-                            .popChangeHandler(HorizontalChangeHandler())
-                    )
+                    LoginFragment().also { supportFragmentManager.setRootFragment(R.id.fragment_container, it) }
                 }
             }
 
@@ -231,8 +192,6 @@ class MainActivity : AppCompatActivity()
 
     private fun setupPeriodSelector()
     {
-        periodsButton = findViewById(R.id.buttonPeriods)
-
         //Set button text
         when (getSelectedPeriod())
         {
@@ -246,7 +205,7 @@ class MainActivity : AppCompatActivity()
 
         periodsButton.setOnClickListener {
 
-            val popup = PopupMenu(this@MainActivity, periodsButton)
+            val popup = PopupMenu(this, periodsButton)
             popup.menuInflater.inflate(R.menu.periods_popup, popup.menu)
 
             popup.setOnMenuItemClickListener { menuItem ->
@@ -294,72 +253,80 @@ class MainActivity : AppCompatActivity()
         accountManager.setPeriodPreference(selectedPeriod)
         periodsButton.text = buttonTitle
 
-        when (router.backstack.last().controller)
-        {
-            is ArtistsController -> router.replaceTopController(
-                RouterTransaction.with(
-                    ArtistsController(
-                        username = currentUser!!,
-                        period = selectedPeriod
-                    )
-                )
-            )
+        ChartsFragment().also {
+            val bundle = Bundle()
+            bundle.putString(BundleStrings.USERNAME_KEY, getCurrentNavUser())
+            bundle.putString(BundleStrings.PERIOD_KEY, getSelectedPeriod())
+            it.arguments = bundle
 
-            is AlbumsController -> router.replaceTopController(
-                RouterTransaction.with(
-                    AlbumsController(
-                        username = currentUser!!,
-                        period = selectedPeriod
-                    )
-                )
-            )
-
-            is TracksController -> router.replaceTopController(
-                RouterTransaction.with(
-                    TracksController(
-                        username = currentUser!!,
-                        period = selectedPeriod
-                    )
-                )
-            )
+            supportFragmentManager.apply {
+                if (this.backStackEntryCount == 0)
+                    this.setRootFragment(R.id.fragment_container, it)
+                else
+                    this.replaceFragment(R.id.fragment_container, it)
+            }
         }
     }
 
-    fun setCurrentNavUser(username: String?)
-    {
-        currentUser = username ?: accountManager.getUser()
-    }
+    private fun getCurrentNavUser() = currentUser ?: accountManager.getUser()
 
     fun getSelectedPeriod(): String = accountManager.getPeriodPreference()
+
+    fun setToolbarTitle(title: String?) = title.let { toolbar.title = it ?: "" }
+
+    fun setTabsVisibility(visible: Boolean)
+    {
+        if (!tabsLayout.isGone && !visible)
+        {
+            ValueAnimator.ofFloat(1f, 0f).also {
+                it.duration = 300
+                it.addUpdateListener { animator -> tabsLayout.alpha = animator.animatedValue as Float }
+                it.start()
+            }
+
+            ValueAnimator.ofFloat(tabsLayout.y, tabsLayout.y - tabsLayout.height).also {
+                it.duration = 300
+                it.addUpdateListener { animator -> tabsLayout.y = animator.animatedValue as Float }
+                it.start()
+                it.doOnEnd { tabsLayout.setGone() }
+            }
+        } else if (!tabsLayout.isVisible && visible)
+        {
+            ValueAnimator.ofFloat(0f, 1f).also {
+                it.doOnStart { tabsLayout.setVisible() }
+                it.duration = 300
+                it.addUpdateListener { animator -> tabsLayout.alpha = animator.animatedValue as Float }
+                it.start()
+            }
+
+            ValueAnimator.ofFloat(tabsLayout.y, tabsLayout.y + tabsLayout.height).also {
+                it.duration = 300
+                it.addUpdateListener { animator -> tabsLayout.y = animator.animatedValue as Float }
+                it.start()
+            }
+        }
+    }
+
+    fun setCurrentNavUser(username: String?) = username.let { currentUser = username ?: accountManager.getUser() }
 
     fun updateNavigationHeader()
     {
         navigationUsername.text = accountManager.getUser()
-        Glide.with(this).load(accountManager.getProfilePicture())
-            .transform(RoundedCorners(20))
-            .into(navigationProfilePicture)
+        navigationProfilePicture.loadRoundedImage(accountManager.getProfilePicture())
 
         navigationProfilePicture.setOnClickListener {
 
-            router.replaceTopController(
-                RouterTransaction.with(
-                    ArtistsController(
-                        username = accountManager.getUser(),
-                        period = getSelectedPeriod()
-                    )
-                )
-                    .popChangeHandler(HorizontalChangeHandler())
-            )
+            ChartsFragment().also {
+                val bundle = Bundle()
+                bundle.putString(BundleStrings.USERNAME_KEY, accountManager.getUser())
+                bundle.putString(BundleStrings.PERIOD_KEY, getSelectedPeriod())
+                it.arguments = bundle
+
+                supportFragmentManager.setRootFragment(R.id.fragment_container, it)
+            }
 
             drawer.closeDrawer(GravityCompat.START)
         }
-    }
-
-    fun setToolbarTitle(title: String?)
-    {
-        if (title.isNullOrEmpty()) toolbar.title = ""
-
-        toolbar.title = title
     }
 
     fun setToolbarVisibility(visible: Boolean)
@@ -367,11 +334,11 @@ class MainActivity : AppCompatActivity()
         if (visible)
         {
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-            toolbar.visibility = View.VISIBLE
+            appBar.visibility = View.VISIBLE
         } else
         {
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            toolbar.visibility = View.GONE
+            appBar.visibility = View.GONE
         }
     }
 
@@ -383,12 +350,12 @@ class MainActivity : AppCompatActivity()
             toolbar.setTitleMargin(
                 toolbar.titleMarginStart,
                 toolbar.titleMarginTop,
-                136.dp,
+                resources.getDimension(R.dimen.periods_button_width).toInt(),
                 toolbar.titleMarginBottom
             )
 
             val animator = ValueAnimator.ofFloat(0f, 1f)
-            animator.duration = 600
+            animator.duration = 300
             animator.addUpdateListener { animation -> periodsButton.alpha = animation.animatedValue as Float }
             animator.start()
 

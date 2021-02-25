@@ -1,6 +1,10 @@
 package com.neno.lastfmapp
 
 import android.content.res.Resources
+import android.view.View
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import java.util.concurrent.TimeUnit
 
 inline val Int.dp: Int
@@ -20,3 +24,38 @@ inline val String.toQuery: String
     {
         return this.replace(" ", "+")
     }
+
+fun View.setVisible()
+{
+    visibility = View.VISIBLE
+}
+
+fun View.setInvisible()
+{
+    visibility = View.INVISIBLE
+}
+
+fun View.setGone()
+{
+    visibility = View.GONE
+}
+
+fun ImageView.loadImage(imageUrl: String?)
+{
+    Glide
+        .with(this)
+        .load(imageUrl)
+        .into(this)
+}
+
+fun ImageView.loadRoundedImage(
+    imageUrl: String?,
+    roundedCorners: Int = resources.getInteger(R.integer.rounded_corner_radius)
+)
+{
+    Glide
+        .with(this)
+        .load(imageUrl)
+        .transform(RoundedCorners(roundedCorners))
+        .into(this)
+}

@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.loadImage
 
 class DetailsRecyclerAdapter(
     private var labelValue: List<LabelValue> = listOf()
@@ -73,7 +73,7 @@ class DetailsRecyclerAdapter(
             }
             is ImageVH ->
             {
-                Glide.with(holder.itemView).load(labelValue[position].value).into(holder.coverImageView)
+                holder.coverImageView.loadImage(labelValue[position].value)
             }
         }
     }

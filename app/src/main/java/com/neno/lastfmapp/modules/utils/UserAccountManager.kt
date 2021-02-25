@@ -20,12 +20,9 @@ class UserAccountManager(
         }
     }
 
-    override fun saveSessionKeyAndPassword(password: String, sessionKey: String)
+    override fun saveSessionKey(password: String, sessionKey: String)
     {
-        sharedPreferences.edit().apply {
-            putString(PROFILE_PASSWORD, password)
-            putString(PROFILE_SESSION_KEY, sessionKey).apply()
-        }
+        sharedPreferences.edit().putString(PROFILE_SESSION_KEY, sessionKey).apply()
     }
 
     override fun getSessionKey(): String
@@ -48,14 +45,13 @@ class UserAccountManager(
     }
 
     override fun isUserLogged(): Boolean = sharedPreferences.contains(PROFILE_NAME) &&
-            sharedPreferences.contains(PROFILE_PASSWORD) && sharedPreferences.contains(PROFILE_SESSION_KEY)
+            sharedPreferences.contains(PROFILE_SESSION_KEY)
 
     override fun logoutUser() = sharedPreferences.edit().clear().apply()
 
     companion object
     {
         private const val PROFILE_NAME = "username"
-        private const val PROFILE_PASSWORD = "password"
         private const val PROFILE_SESSION_KEY = "session"
         private const val PROFILE_PICTURE = "picture"
         private const val PROFILE_PERIOD = "period"

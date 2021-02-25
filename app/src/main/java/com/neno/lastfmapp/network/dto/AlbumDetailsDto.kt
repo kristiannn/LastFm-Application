@@ -21,7 +21,9 @@ data class AlbumDetailsDto(
     @SerializedName("playcount")
     val playCount: Int,
     @SerializedName("wiki")
-    val bio: BioDto?
+    val bio: BioDto?,
+    @SerializedName("tags")
+    val topTags: TopTags?
 )
 
 fun AlbumDetailsDto.mapToRepository(): AlbumDetailsWrapper
@@ -33,6 +35,7 @@ fun AlbumDetailsDto.mapToRepository(): AlbumDetailsWrapper
         listeners = DecimalFormat.getInstance().format(listeners),
         playCount = DecimalFormat.getInstance().format(playCount),
         published = bio?.published,
-        bio = bio?.content?.substringBefore("<a")
+        bio = bio?.content?.substringBefore("<a"),
+        topTags = topTags?.tags?.map { it.name }
     )
 }

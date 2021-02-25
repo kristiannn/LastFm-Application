@@ -1,6 +1,5 @@
 package com.neno.lastfmapp.network
 
-import android.util.Log
 import com.neno.lastfmapp.Result
 import com.neno.lastfmapp.modules.utils.AccountManager
 import com.neno.lastfmapp.network.utils.HttpResultConverter
@@ -43,9 +42,7 @@ class LastFmAuth(
     {
         try
         {
-            val queryMap = getSignature(params)
-
-            val response = authService.updateTrackPlaying(queryMap = queryMap).execute()
+            authService.updateTrackPlaying(queryMap = getSignature(params)).execute()
         } catch (e: IOException)
         {
             println(e)
