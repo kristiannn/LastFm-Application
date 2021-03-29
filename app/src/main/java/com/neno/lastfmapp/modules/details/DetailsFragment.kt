@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,12 +40,18 @@ class DetailsFragment : SecondaryFragment()
         return inflater.inflate(R.layout.details_list_layout, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+
+        setObservers()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
         setupViews(view)
-        setObservers()
     }
 
     private fun setupViews(view: View)
@@ -115,27 +120,13 @@ class DetailsFragment : SecondaryFragment()
         viewModel.screenState.observe(viewLifecycleOwner, {
             when
             {
-                it.isLoading ->
-                {
-                    progressBar.setVisible()
-                    activity?.window?.setFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                    )
-                }
+                it.isLoading -> progressBar.setVisible()
                 it.errorMessage != null ->
                 {
                     progressBar.setGone()
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
-
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
-                else ->
-                {
-                    progressBar.setGone()
-
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                }
+                else -> progressBar.setGone()
             }
         })
     }

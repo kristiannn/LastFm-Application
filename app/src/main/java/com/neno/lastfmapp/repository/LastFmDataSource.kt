@@ -71,11 +71,11 @@ class LastFmDataSource(
         }
     )
 
-    override suspend fun getRecentTracks(username: String, page: Int): Result<List<RecentTrackWrapper>>
+    override suspend fun getRecentTracks(username: String, page: Int, limit: Int): Result<List<RecentTrackWrapper>>
     {
         return lastFmServiceOperations.getRecentTracks(
             username = username,
-            limit = RESULTS_LIMIT,
+            limit = limit,
             page = page
         )
     }
@@ -130,7 +130,7 @@ class LastFmDataSource(
 
     override suspend fun updateNowPlaying(artist: String, track: String, album: String?)
     {
-        val params = mutableMapOf<String, String>(
+        val params = mutableMapOf(
             LastFmQueryParams.artist to artist,
             LastFmQueryParams.track to track,
             LastFmQueryParams.method to LastFmMethods.NOW_PLAYING_SONG
@@ -143,7 +143,7 @@ class LastFmDataSource(
 
     override suspend fun scrobbleTrack(artist: String, track: String, timestamp: String, album: String?): Result<Unit>
     {
-        val params = mutableMapOf<String, String>(
+        val params = mutableMapOf(
             LastFmQueryParams.artist to artist,
             LastFmQueryParams.track to track,
             LastFmQueryParams.timestamp to timestamp,

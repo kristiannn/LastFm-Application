@@ -18,17 +18,17 @@ class RecentsViewModel(
     private var page = 0
 
     private val _screenState = MutableLiveData<ScreenState>()
-    private val _recentsListState = MutableLiveData<RecentsListState>()
+    private val _recentsListState = MutableLiveData<List<RecentTrackWrapper>>()
 
     val screenState: LiveData<ScreenState>
         get() = _screenState
 
-    val recentsListState: LiveData<RecentsListState>
+    val recentsListState: LiveData<List<RecentTrackWrapper>>
         get() = _recentsListState
 
     init
     {
-        _recentsListState.value = RecentsListState()
+        _recentsListState.value = listOf()
         _screenState.value = ScreenState()
 
         getRecentTracks(true)
@@ -93,15 +93,11 @@ class RecentsViewModel(
 
             if (result is Result.Success)
             {
-                val newTracksList: List<RecentTrackWrapper> = if (isReload)
-                {
-                    result.data
-                } else
-                {
-                    _recentsListState.value!!.tracksList + result.data.filter { it.date != null }
-                }
+                val newTracksList: List<RecentTrackWrapper> =
+                    if (isReload) result.data
+                    else _recentsListState.value!! + result.data.filter { it.date != null }
 
-                _recentsListState.postValue(RecentsListState(newTracksList))
+                _recentsListState.postValue(newTracksList)
 
                 _screenState.postValue(
                     ScreenState(
@@ -124,10 +120,6 @@ class RecentsViewModel(
             }
         }
     }
-
-    data class RecentsListState(
-        val tracksList: List<RecentTrackWrapper> = listOf()
-    )
 
     data class ScreenState(
         val isLoading: Boolean = false,

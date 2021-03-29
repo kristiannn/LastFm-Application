@@ -5,9 +5,11 @@
     <dimen name="nav_header_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">186dp</dimen>
+    <dimen name="nav_header_image_view">80dp</dimen>
 
     // Recycler Items
     <dimen name="recycler_item_height">64dp</dimen>
+    <dimen name="recycler_item_image_view">52dp</dimen>
 
     // Scrobble Button
     <dimen name="scrobble_button_height">64dp</dimen>

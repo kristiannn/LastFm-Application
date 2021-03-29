@@ -35,7 +35,7 @@ fun AlbumDetailsDto.mapToRepository(): AlbumDetailsWrapper
         listeners = DecimalFormat.getInstance().format(listeners),
         playCount = DecimalFormat.getInstance().format(playCount),
         published = bio?.published,
-        bio = bio?.content?.substringBefore("<a"),
+        bio = bio?.content?.substringBefore("<a")?.trim(),
         topTags = topTags?.tags?.map { it.name }
     )
 }

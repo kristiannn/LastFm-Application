@@ -19,17 +19,17 @@ class ArtistsViewModel(
     private var page = 0
 
     private val _screenState = MutableLiveData<ScreenState>()
-    private val _artistsListState = MutableLiveData<ArtistsListState>()
+    private val _artistsListState = MutableLiveData<List<ArtistWrapper>>()
 
     val screenState: LiveData<ScreenState>
         get() = _screenState
 
-    val artistsListState: LiveData<ArtistsListState>
+    val artistsListState: LiveData<List<ArtistWrapper>>
         get() = _artistsListState
 
     init
     {
-        _artistsListState.value = ArtistsListState()
+        _artistsListState.value = listOf()
         _screenState.value = ScreenState()
 
         loadInitialData()
@@ -55,7 +55,7 @@ class ArtistsViewModel(
                 loadFromDb = true
             )
 
-            if (result is Result.Success) _artistsListState.postValue(ArtistsListState(result.data))
+            if (result is Result.Success) _artistsListState.postValue(result.data)
         }
     }
 
@@ -94,15 +94,11 @@ class ArtistsViewModel(
                     return@launch
                 }
 
-                val newArtistsList: List<ArtistWrapper> = if (isReload)
-                {
-                    result.data
-                } else
-                {
-                    _artistsListState.value!!.artistsList + result.data
-                }
+                val newArtistsList: List<ArtistWrapper> =
+                    if (isReload) result.data
+                    else _artistsListState.value!! + result.data
 
-                _artistsListState.postValue(ArtistsListState(newArtistsList))
+                _artistsListState.postValue(newArtistsList)
 
                 _screenState.postValue(
                     ScreenState(
@@ -123,10 +119,6 @@ class ArtistsViewModel(
             }
         }
     }
-
-    data class ArtistsListState(
-        val artistsList: List<ArtistWrapper> = listOf()
-    )
 
     data class ScreenState(
         val isLoading: Boolean = false,

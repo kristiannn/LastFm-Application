@@ -20,6 +20,7 @@ class AlbumsDiffUtils(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
     {
-        return oldAlbumsList[oldItemPosition]?.playCount == newAlbumsList[newItemPosition]?.playCount
+        return oldAlbumsList[oldItemPosition]?.playCount == newAlbumsList[newItemPosition]?.playCount &&
+                newItemPosition == oldItemPosition
     }
 }

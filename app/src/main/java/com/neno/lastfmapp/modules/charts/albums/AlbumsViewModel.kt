@@ -20,17 +20,17 @@ class AlbumsViewModel(
     private var page = 0
 
     private val _screenState = MutableLiveData<ScreenState>()
-    private val _albumsListState = MutableLiveData<AlbumsListState>()
+    private val _albumsListState = MutableLiveData<List<AlbumWrapper>>()
 
     val screenState: LiveData<ScreenState>
         get() = _screenState
 
-    val albumsListState: LiveData<AlbumsListState>
+    val albumsListState: LiveData<List<AlbumWrapper>>
         get() = _albumsListState
 
     init
     {
-        _albumsListState.value = AlbumsListState()
+        _albumsListState.value = listOf()
         _screenState.value = ScreenState()
 
         loadInitialData()
@@ -59,7 +59,7 @@ class AlbumsViewModel(
             {
                 // Since we're loading the 3 tabs at the same time, this makes the animations a lot smoother
                 delay(300)
-                _albumsListState.postValue(AlbumsListState(result.data))
+                _albumsListState.postValue(result.data)
             }
         }
     }
@@ -86,15 +86,11 @@ class AlbumsViewModel(
 
             if (result is Result.Success)
             {
-                val newAlbumsList: List<AlbumWrapper> = if (isReload)
-                {
-                    result.data
-                } else
-                {
-                    albumsListState.value!!.albumsList + result.data
-                }
+                val newAlbumsList: List<AlbumWrapper> =
+                    if (isReload) result.data
+                    else albumsListState.value!! + result.data
 
-                _albumsListState.postValue(AlbumsListState(newAlbumsList))
+                _albumsListState.postValue(newAlbumsList)
 
                 _screenState.postValue(
                     ScreenState(
@@ -115,10 +111,6 @@ class AlbumsViewModel(
             }
         }
     }
-
-    data class AlbumsListState(
-        val albumsList: List<AlbumWrapper> = listOf()
-    )
 
     data class ScreenState(
         val isLoading: Boolean = false,

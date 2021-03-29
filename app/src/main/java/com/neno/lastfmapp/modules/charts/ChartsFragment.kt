@@ -17,7 +17,6 @@ class ChartsFragment : ListsFragment()
 {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
-    private lateinit var toolbar: Toolbar
     private lateinit var chartsAdapter: ChartsAdapter
 
     private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }

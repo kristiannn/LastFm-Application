@@ -1,13 +1,15 @@
 package com.neno.lastfmapp.modules.utils.fragments
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.neno.lastfmapp.MainActivity
 
 abstract class BaseFragment : Fragment()
 {
-    override fun onResume()
+    override fun onActivityCreated(savedInstanceState: Bundle?)
     {
-        super.onResume()
+        super.onActivityCreated(savedInstanceState)
+
         updateSettings()
     }
 

@@ -19,7 +19,8 @@ class ArtistsDiffUtils(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
     {
-        return oldArtistsList[oldItemPosition]?.playCount == newArtistsList[newItemPosition]?.playCount
+        return oldArtistsList[oldItemPosition]?.playCount == newArtistsList[newItemPosition]?.playCount &&
+                newItemPosition == oldItemPosition
     }
 
     //TODO - show if artist has gone up or down

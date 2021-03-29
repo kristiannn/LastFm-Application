@@ -9,8 +9,15 @@ data class RecentTracksBaseScope(
 )
 
 data class RecentTracksScope(
+    @SerializedName("@attr")
+    val extraInfo: RecentExtraInfo,
     @SerializedName("track")
     val tracksList: List<RecentTrackDto>
+)
+
+data class RecentExtraInfo(
+    @SerializedName("total")
+    val totalScrobbles: Int
 )
 
 data class RecentArtistDto(
@@ -36,13 +43,16 @@ data class RecentTrackDto(
     val image: List<ImageDto>
 )
 
-fun RecentTrackDto.mapToRepository(): RecentTrackWrapper
+fun RecentTracksBaseScope.mapToRepository(): List<RecentTrackWrapper>
 {
-    return RecentTrackWrapper(
-        artist = artist.artist,
-        album = album?.album,
-        track = track,
-        date = date?.unixTime,
-        image = image[2].url
-    )
+    return recentTracksScope.tracksList.map {
+        RecentTrackWrapper(
+            artist = it.artist.artist,
+            album = it.album?.album,
+            track = it.track,
+            date = it.date?.unixTime,
+            image = it.image[2].url,
+            totalScrobbles = recentTracksScope.extraInfo.totalScrobbles
+        )
+    }
 }

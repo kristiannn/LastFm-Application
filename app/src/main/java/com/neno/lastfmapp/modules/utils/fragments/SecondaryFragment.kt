@@ -8,7 +8,7 @@ abstract class SecondaryFragment : BaseFragment()
 
     override fun tabsVisible(): Boolean = false
 
-    protected abstract override fun toolbarTitle(): String?
+    abstract override fun toolbarTitle(): String?
 
-    protected abstract override fun currentNavigationUser(): String?
+    abstract override fun currentNavigationUser(): String?
 }

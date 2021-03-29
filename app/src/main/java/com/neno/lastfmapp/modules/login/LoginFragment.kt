@@ -36,12 +36,18 @@ class LoginFragment : BasicFragment()
         return inflater.inflate(R.layout.login_layout, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+
+        setObservers()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
         setupViews(view)
-        setObservers()
     }
 
     private fun setupViews(view: View)

@@ -1,11 +1,11 @@
 package com.neno.lastfmapp.modules.friends
 
 import androidx.recyclerview.widget.DiffUtil
-import com.neno.lastfmapp.repository.models.ProfileWrapper
+import com.neno.lastfmapp.repository.models.FriendWrapper
 
 class FriendsDiffUtils(
-    private val oldFriendsList: List<ProfileWrapper>,
-    private val newFriendsList: List<ProfileWrapper>
+    private val oldFriendsList: List<FriendWrapper>,
+    private val newFriendsList: List<FriendWrapper>
 ) : DiffUtil.Callback()
 {
     override fun getOldListSize(): Int = oldFriendsList.size
@@ -19,6 +19,9 @@ class FriendsDiffUtils(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
     {
-        return oldFriendsList[oldItemPosition].totalScrobbles == newFriendsList[newItemPosition].totalScrobbles
+        return oldFriendsList[oldItemPosition].totalScrobbles == newFriendsList[newItemPosition].totalScrobbles &&
+                oldFriendsList[oldItemPosition].lastScrobble == newFriendsList[newItemPosition].lastScrobble &&
+                oldFriendsList[oldItemPosition].lastScrobbleTime == newFriendsList[newItemPosition].lastScrobbleTime &&
+                oldFriendsList[oldItemPosition].profilePicture == newFriendsList[newItemPosition].profilePicture
     }
 }

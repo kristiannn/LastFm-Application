@@ -18,6 +18,7 @@ fun ProfileEntity.mapToRepository(): ProfileWrapper
 {
     return ProfileWrapper(
         username = username,
+        realName = "",
         profilePicture = profilePicture,
         totalScrobbles = totalScrobbles
     )
