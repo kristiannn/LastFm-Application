@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -39,12 +38,18 @@ class ArtistsFragment : Fragment()
         return inflater.inflate(R.layout.lists_layout, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+
+        setObservers()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
         setupViews(view)
-        setObservers()
     }
 
     private fun setupViews(view: View)
@@ -62,7 +67,7 @@ class ArtistsFragment : Fragment()
 
         recyclerView.layoutManager = layoutManager
         recyclerAdapter = ArtistsRecyclerAdapter(
-            artistsList = viewModel.artistsListState.value!!.artistsList,
+            artistsList = listOf(),
             onArtistItemClicked = { artist ->
 
                 DetailsFragment().also {
@@ -100,41 +105,27 @@ class ArtistsFragment : Fragment()
     private fun setObservers()
     {
         viewModel.artistsListState.observe(viewLifecycleOwner, {
-            recyclerAdapter.updateList(it.artistsList)
+            recyclerAdapter.updateList(it)
         })
 
         viewModel.screenState.observe(viewLifecycleOwner, {
             when
             {
-                it.isLoading ->
-                {
-                    progressBar.setVisible()
+                it.isLoading -> progressBar.setVisible()
 
-                    activity?.window?.setFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                    )
-                }
-                it.isListUpdating ->
-                {
-                    progressBar.setGone()
+                it.isListUpdating -> progressBar.setGone()
 
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                }
                 it.errorMessage != null ->
                 {
                     progressBar.setGone()
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
-
                     recyclerAdapter.removeLoadingItem()
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
+
                 else ->
                 {
                     progressBar.setGone()
-
                     recyclerAdapter.removeLoadingItem()
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
             }
         })

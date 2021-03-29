@@ -14,13 +14,16 @@ data class ProfileDto(
     @SerializedName("image")
     val profilePicture: List<ImageDto>,
     @SerializedName("playcount")
-    val totalScrobbles: Int
+    val totalScrobbles: Int,
+    @SerializedName("realname")
+    val realName: String
 )
 
 fun ProfileDto.mapToRepository(): ProfileWrapper
 {
     return ProfileWrapper(
         username = username,
+        realName = realName,
         profilePicture = profilePicture[1].url,
         totalScrobbles = totalScrobbles
     )

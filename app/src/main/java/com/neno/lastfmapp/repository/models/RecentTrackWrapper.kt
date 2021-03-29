@@ -9,5 +9,6 @@ data class RecentTrackWrapper(
     val artist: String,
     val album: String?,
     val date: Int?,
-    val image: String
+    val image: String,
+    val totalScrobbles: Int
 ) : Parcelable

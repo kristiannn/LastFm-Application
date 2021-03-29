@@ -49,7 +49,7 @@ class LastFmDataFetcher(
     override suspend fun getRecentTracks(username: String, limit: Int, page: Int): Result<List<RecentTrackWrapper>> =
         executeRequest(
             { service.getRecentTracks(username, page, limit, API_KEY).execute() },
-            { recentTracks -> recentTracks.recentTracksScope.tracksList.map { it.mapToRepository() } }
+            { recentTracks -> recentTracks.mapToRepository() }
         )
 
     override suspend fun getProfile(username: String): Result<ProfileWrapper> = executeRequest(

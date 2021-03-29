@@ -71,11 +71,11 @@ class LastFmDataSource(
         }
     )
 
-    override suspend fun getRecentTracks(username: String, page: Int): Result<List<RecentTrackWrapper>>
+    override suspend fun getRecentTracks(username: String, page: Int, limit: Int): Result<List<RecentTrackWrapper>>
     {
         return lastFmServiceOperations.getRecentTracks(
             username = username,
-            limit = RESULTS_LIMIT,
+            limit = limit,
             page = page
         )
     }

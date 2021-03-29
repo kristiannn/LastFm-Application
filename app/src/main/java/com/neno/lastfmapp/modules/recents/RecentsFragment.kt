@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +34,7 @@ class RecentsFragment : SecondaryFragment()
     private lateinit var progressBar: ProgressBar
     private lateinit var scrobbleButton: Button
     private lateinit var swipeContainer: SwipeRefreshLayout
+    private var isReloading = false
 
     private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }
 
@@ -49,12 +49,18 @@ class RecentsFragment : SecondaryFragment()
         return inflater.inflate(R.layout.lists_layout, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+
+        setObservers()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
         setupViews(view)
-        setObservers()
     }
 
     private fun setupViews(view: View)
@@ -64,9 +70,8 @@ class RecentsFragment : SecondaryFragment()
         scrobbleButton = view.findViewById(R.id.buttonScrobble)!!
         swipeContainer = view.findViewById(R.id.swipeContainer)!!
 
-        scrobbleButton.visibility = View.INVISIBLE
-
         swipeContainer.setOnRefreshListener {
+            isReloading = true
             viewModel.getRecentTracks(true)
             swipeContainer.isRefreshing = false
         }
@@ -78,7 +83,7 @@ class RecentsFragment : SecondaryFragment()
         scrobbleButton.setOnClickListener { viewModel.scrobbleTracks(recyclerAdapter.getSelectedItems()) }
 
         recyclerAdapter = RecentsRecyclerAdapter(
-            tracksList = viewModel.recentsListState.value!!.tracksList,
+            tracksList = listOf(),
             onTrackItemClicked = { artist, track ->
 
                 DetailsFragment().also {
@@ -164,59 +169,49 @@ class RecentsFragment : SecondaryFragment()
     private fun setObservers()
     {
         viewModel.recentsListState.observe(viewLifecycleOwner, {
-            recyclerAdapter.updateList(it.tracksList)
+            recyclerAdapter.updateList(it)
+
+            if (isReloading)
+            {
+                recyclerView.scrollToPosition(0)
+                isReloading = false
+            }
         })
 
         viewModel.screenState.observe(viewLifecycleOwner, {
             when
             {
-                it.isLoading ->
-                {
-                    progressBar.visibility = View.VISIBLE
+                it.isLoading -> progressBar.visibility = View.VISIBLE
 
-                    activity?.window?.setFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                    )
-                }
-                it.isListUpdating ->
-                {
-                    progressBar.visibility = View.GONE
+                it.isListUpdating -> progressBar.visibility = View.GONE
 
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                }
                 it.errorMessage != null ->
                 {
                     progressBar.visibility = View.GONE
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     recyclerAdapter.removeLoadingItem()
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
+
                 it.scrobbles != null ->
                 {
                     //val scrobbledTracks = it.scrobbles.first() // May use this at some point
                     val failedScrobbles = it.scrobbles.last()
-                    var errorMessage: String?
 
-                    errorMessage = if (failedScrobbles == 0) resources.getString(R.string.scrobble_successful)
+                    val errorMessage = if (failedScrobbles == 0) resources.getString(R.string.scrobble_successful)
                     else resources.getString(R.string.scrobble_unsuccessful, failedScrobbles)
-
-                    //Not really, but would you really say you couldn't load the text? :D
-                    if (errorMessage.isNullOrEmpty()) errorMessage = resources.getString(R.string.unknown_error)
 
                     progressBar.visibility = View.GONE
                     NotifyDialog(errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     recyclerAdapter.removeLoadingItem()
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
+
                 else ->
                 {
                     progressBar.visibility = View.GONE
 
                     recyclerAdapter.removeLoadingItem()
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
             }
         })

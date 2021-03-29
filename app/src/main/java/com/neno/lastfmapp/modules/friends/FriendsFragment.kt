@@ -42,12 +42,18 @@ class FriendsFragment : SecondaryFragment()
         return inflater.inflate(R.layout.lists_layout, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+
+        setObservers()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
         setupViews(view)
-        setObservers()
     }
 
     private fun setupViews(view: View)
@@ -63,7 +69,7 @@ class FriendsFragment : SecondaryFragment()
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerAdapter = FriendsRecyclerAdapter(
-            friendsList = viewModel.friendsListState.value!!.friendsList,
+            friendsList = listOf(),
             onFriendsItemClicked = { username ->
                 val mainActivity = activity as MainActivity
 
@@ -83,21 +89,14 @@ class FriendsFragment : SecondaryFragment()
     private fun setObservers()
     {
         viewModel.friendsListState.observe(viewLifecycleOwner, {
-            recyclerAdapter.updateList(it.friendsList)
+            recyclerAdapter.updateList(it)
         })
 
         viewModel.screenState.observe(viewLifecycleOwner, {
             when
             {
-                it.isLoading ->
-                {
-                    progressBar.setVisible()
+                it.isLoading -> progressBar.setVisible()
 
-                    activity?.window?.setFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                    )
-                }
                 it.errorMessage != null ->
                 {
                     progressBar.setGone()
@@ -105,12 +104,8 @@ class FriendsFragment : SecondaryFragment()
 
                     activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
-                else ->
-                {
-                    progressBar.setGone()
 
-                    activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                }
+                else -> progressBar.setGone()
             }
         })
     }

@@ -18,8 +18,8 @@
 
     <ImageView
         android:id="@+id/ivCover"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="@dimen/recycler_item_image_view"
+        android:layout_height="@dimen/recycler_item_image_view"
         android:layout_marginStart="8dp"
         android:contentDescription="@string/cover_description"
         app:layout_constraintBottom_toBottomOf="parent"

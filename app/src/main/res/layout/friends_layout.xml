@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/recycler_item_height"
     android:background="@drawable/recycler_item">
 
     <ImageView
         android:id="@+id/ivProfilePicture"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
+        android:layout_width="@dimen/recycler_item_image_view"
+        android:layout_height="@dimen/recycler_item_image_view"
         android:layout_marginStart="8dp"
-        android:contentDescription="@string/profile_picture_description"/>
+        android:contentDescription="@string/profile_picture_description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/tvUsername"
         style="@style/TextStyle.Main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_toStartOf="@id/tvDetails"
-        android:layout_toEndOf="@id/ivProfilePicture"
-        android:padding="8dp"/>
+        android:maxHeight="40dp"
+        app:layout_constraintBottom_toTopOf="@id/tvListening"
+        app:layout_constraintLeft_toRightOf="@id/ivProfilePicture"
+        app:layout_constraintRight_toLeftOf="@id/tvDetails"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
+    <TextView
+        android:id="@+id/tvListening"
+        style="@style/TextStyle.Secondary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
+        android:maxHeight="38dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/ivProfilePicture"
+        app:layout_constraintRight_toLeftOf="@id/tvDetails"
+        app:layout_constraintTop_toBottomOf="@id/tvUsername"
+        app:layout_constraintVertical_chainStyle="packed"/>
 
     <TextView
         android:id="@+id/tvDetails"
@@ -30,6 +50,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="24dp"/>
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

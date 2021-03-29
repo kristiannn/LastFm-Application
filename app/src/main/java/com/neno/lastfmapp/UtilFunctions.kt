@@ -3,8 +3,10 @@ package com.neno.lastfmapp
 import android.content.res.Resources
 import android.view.View
 import android.widget.ImageView
+import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
 
 inline val Int.dp: Int
@@ -24,6 +26,11 @@ inline val String.toQuery: String
     {
         return this.replace(" ", "+")
     }
+
+fun Int.format(): String
+{
+    return NumberFormat.getNumberInstance().format(this)
+}
 
 fun View.setVisible()
 {
@@ -58,4 +65,9 @@ fun ImageView.loadRoundedImage(
         .load(imageUrl)
         .transform(RoundedCorners(roundedCorners))
         .into(this)
+}
+
+fun <T> MutableLiveData<T>.modifyValue(transform: T.() -> T)
+{
+    this.value = this.value?.run(transform)
 }

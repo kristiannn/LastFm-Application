@@ -8,11 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.format
 import com.neno.lastfmapp.loadRoundedImage
-import com.neno.lastfmapp.repository.models.ProfileWrapper
+import com.neno.lastfmapp.repository.models.FriendWrapper
 
 class FriendsRecyclerAdapter(
-    private var friendsList: List<ProfileWrapper>,
+    private var friendsList: List<FriendWrapper>,
     val onFriendsItemClicked: OnFriendsItemClicked
 ) : RecyclerView.Adapter<FriendsRecyclerAdapter.FriendsRecyclerViewHolder>()
 {
@@ -20,6 +21,7 @@ class FriendsRecyclerAdapter(
     {
         val profilePictureImageView: ImageView = itemView.findViewById(R.id.ivProfilePicture)
         val usernameTextView: TextView = itemView.findViewById(R.id.tvUsername)
+        val listeningTextView: TextView = itemView.findViewById(R.id.tvListening)
         val scrobblesTextView: TextView = itemView.findViewById(R.id.tvDetails)
     }
 
@@ -32,8 +34,12 @@ class FriendsRecyclerAdapter(
 
     override fun onBindViewHolder(holder: FriendsRecyclerViewHolder, position: Int)
     {
-        holder.usernameTextView.text = friendsList[position].username
-        holder.scrobblesTextView.text = friendsList[position].totalScrobbles.toString()
+        val username =
+            if (friendsList[position].realName.isNotEmpty()) friendsList[position].realName else friendsList[position].username
+
+        holder.usernameTextView.text = username
+        holder.listeningTextView.text = friendsList[position].lastScrobble
+        holder.scrobblesTextView.text = friendsList[position].totalScrobbles.format()
         holder.profilePictureImageView.loadRoundedImage(friendsList[position].profilePicture)
 
         holder.itemView.setOnClickListener { onFriendsItemClicked.invoke(friendsList[position].username) }
@@ -41,7 +47,7 @@ class FriendsRecyclerAdapter(
 
     override fun getItemCount(): Int = friendsList.size
 
-    fun updateList(newFriendsList: List<ProfileWrapper>)
+    fun updateList(newFriendsList: List<FriendWrapper>)
     {
         val diffResult = DiffUtil.calculateDiff(FriendsDiffUtils(friendsList, newFriendsList))
         friendsList = newFriendsList

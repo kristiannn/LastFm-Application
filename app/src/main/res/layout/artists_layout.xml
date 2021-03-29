@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
+    android:layout_height="@dimen/recycler_item_height"
     android:background="@drawable/recycler_item">
 
     <TextView
@@ -15,8 +15,8 @@
 
     <ImageView
         android:id="@+id/ivCover"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="@dimen/recycler_item_image_view"
+        android:layout_height="@dimen/recycler_item_image_view"
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
         android:layout_toEndOf="@id/tvPosition"

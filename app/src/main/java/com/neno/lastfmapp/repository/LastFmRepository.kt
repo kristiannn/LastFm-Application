@@ -11,7 +11,7 @@ interface LastFmRepository
 
     suspend fun getTracks(username: String, period: String, page: Int, loadFromDb: Boolean): Result<List<TrackWrapper>>
 
-    suspend fun getRecentTracks(username: String, page: Int) : Result<List<RecentTrackWrapper>>
+    suspend fun getRecentTracks(username: String, page: Int, limit: Int = 50) : Result<List<RecentTrackWrapper>>
 
     suspend fun getProfile(username: String): Result<ProfileWrapper>
 

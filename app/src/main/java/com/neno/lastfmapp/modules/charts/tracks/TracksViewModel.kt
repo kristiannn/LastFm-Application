@@ -20,17 +20,17 @@ class TracksViewModel(
     private var page = 0
 
     private val _screenState = MutableLiveData<ScreenState>()
-    private val _tracksListState = MutableLiveData<TracksListState>()
+    private val _tracksListState = MutableLiveData<List<TrackWrapper>>()
 
     val screenState: LiveData<ScreenState>
         get() = _screenState
 
-    val tracksListState: LiveData<TracksListState>
+    val tracksListState: LiveData<List<TrackWrapper>>
         get() = _tracksListState
 
     init
     {
-        _tracksListState.value = TracksListState()
+        _tracksListState.value = listOf()
         _screenState.value = ScreenState()
 
         loadInitialData()
@@ -59,7 +59,7 @@ class TracksViewModel(
             {
                 // Since we're loading the 3 tabs at the same time, this makes the animations a lot smoother
                 delay(300)
-                _tracksListState.postValue(TracksListState(result.data))
+                _tracksListState.postValue(result.data)
             }
         }
     }
@@ -86,15 +86,11 @@ class TracksViewModel(
 
             if (result is Result.Success)
             {
-                val newTracksList: List<TrackWrapper> = if (isReload)
-                {
-                    result.data
-                } else
-                {
-                    _tracksListState.value!!.tracksList + result.data
-                }
+                val newTracksList: List<TrackWrapper> =
+                    if (isReload) result.data
+                    else _tracksListState.value!! + result.data
 
-                _tracksListState.postValue(TracksListState(newTracksList))
+                _tracksListState.postValue(newTracksList)
 
                 _screenState.postValue(
                     ScreenState(
@@ -115,10 +111,6 @@ class TracksViewModel(
             }
         }
     }
-
-    data class TracksListState(
-        val tracksList: List<TrackWrapper> = listOf()
-    )
 
     data class ScreenState(
         val isLoading: Boolean = false,
