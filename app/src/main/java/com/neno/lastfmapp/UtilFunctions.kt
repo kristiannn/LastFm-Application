@@ -66,3 +66,8 @@ fun ImageView.loadRoundedImage(
         .transform(RoundedCorners(roundedCorners))
         .into(this)
 }
+
+fun <T> MutableLiveData<T>.modifyValue(transform: T.() -> T)
+{
+    this.value = this.value?.run(transform)
+}
