@@ -53,6 +53,11 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="TextStyle.Title">
+        <item name="android:textSize">@dimen/fontSize_xlarge</item>
+        <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
     <style name="TextStyle.Dialog" parent="TextStyle">
         <item name="android:textAlignment">center</item>
     </style>

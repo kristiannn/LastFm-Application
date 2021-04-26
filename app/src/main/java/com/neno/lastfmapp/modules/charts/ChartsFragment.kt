@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -21,8 +20,9 @@ class ChartsFragment : ListsFragment()
 
     private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }
     private val period by lazy { arguments?.getString(BundleStrings.PERIOD_KEY) }
+    private val realName by lazy { arguments?.getString(BundleStrings.REALNAME_KEY) }
 
-    override fun toolbarTitle(): String? = username
+    override fun toolbarTitle(): String? = if (realName.isNullOrEmpty()) username else realName
 
     override fun currentNavigationUser(): String? = username
 

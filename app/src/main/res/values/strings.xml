@@ -55,6 +55,8 @@
     <string name="artists">Artists</string>
     <string name="albums">Albums</string>
     <string name="tracks">Tracks</string>
+    <string name="similar_artists">Similar Artists</string>
+    <string name="album_tracks">Album Tracks</string>
 
     // Errors
     <string name="unknown_error">An unknown error occurred!</string>

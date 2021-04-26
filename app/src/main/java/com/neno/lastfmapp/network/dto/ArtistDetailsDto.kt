@@ -2,6 +2,7 @@ package com.neno.lastfmapp.network.dto
 
 import com.google.gson.annotations.SerializedName
 import com.neno.lastfmapp.repository.models.ArtistDetailsWrapper
+import com.neno.lastfmapp.repository.models.ArtistWrapper
 import java.text.DecimalFormat
 
 data class ArtistDetailsBaseScope(
@@ -26,7 +27,9 @@ data class ArtistDetailsDto(
     @SerializedName("bio")
     val bio: BioDto?,
     @SerializedName("tags")
-    val topTags: TopTags?
+    val topTags: TopTags?,
+    @SerializedName("similar")
+    val similarArtistsList: SimilarArtistsList
 )
 
 fun ArtistDetailsDto.mapToRepository(): ArtistDetailsWrapper
@@ -38,6 +41,7 @@ fun ArtistDetailsDto.mapToRepository(): ArtistDetailsWrapper
         playCount = DecimalFormat.getInstance().format(stats.playCount),
         published = bio?.published,
         bio = bio?.content?.substringBefore("<a")?.trim(),
-        topTags = topTags?.tags?.map { it.name }
+        topTags = topTags?.tags?.map { it.name },
+        similarArtists = similarArtistsList.artistsList.map { ArtistWrapper(it.name, 0, it.images.last().url) }
     )
 }

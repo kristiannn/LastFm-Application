@@ -7,5 +7,6 @@ data class ArtistDetailsWrapper(
     val playCount: String,
     val published: String?,
     val bio: String?,
-    val topTags: List<String>?
+    val topTags: List<String>?,
+    val similarArtists: List<ArtistWrapper>
 )

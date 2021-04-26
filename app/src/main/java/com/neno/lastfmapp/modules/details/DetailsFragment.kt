@@ -67,54 +67,7 @@ class DetailsFragment : SecondaryFragment()
     private fun setObservers()
     {
         viewModel.detailsState.observe(viewLifecycleOwner, {
-            when
-            {
-                it.artistDetails != null ->
-                {
-                    val list: List<LabelValue> = listOf(
-                        LabelValue(null, it.artistDetails.image, null),
-                        LabelValue(resources.getString(R.string.artist), it.artistDetails.artist),
-                        LabelValue(resources.getString(R.string.published), it.artistDetails.published ?: "-"),
-                        LabelValue(resources.getString(R.string.listeners), it.artistDetails.listeners),
-                        LabelValue(resources.getString(R.string.playCount), it.artistDetails.playCount),
-                        LabelValue(resources.getString(R.string.bio), it.artistDetails.bio ?: "-", false)
-                    )
-
-                    recyclerAdapter.updateList(list)
-                }
-
-                it.albumDetails != null ->
-                {
-                    val list: List<LabelValue> = listOf(
-                        LabelValue(null, it.albumDetails.image, null),
-                        LabelValue(resources.getString(R.string.artist), it.albumDetails.artist),
-                        LabelValue(resources.getString(R.string.album), it.albumDetails.album),
-                        LabelValue(resources.getString(R.string.published), it.albumDetails.published ?: "-"),
-                        LabelValue(resources.getString(R.string.listeners), it.albumDetails.listeners),
-                        LabelValue(resources.getString(R.string.playCount), it.albumDetails.playCount),
-                        LabelValue(resources.getString(R.string.bio), it.albumDetails.bio ?: "-", false)
-                    )
-
-                    recyclerAdapter.updateList(list)
-                }
-
-                it.trackDetails != null ->
-                {
-                    val list: List<LabelValue> = listOf(
-                        LabelValue(null, it.trackDetails.image, null),
-                        LabelValue(resources.getString(R.string.artist), it.trackDetails.artist ?: "-"),
-                        LabelValue(resources.getString(R.string.album), it.trackDetails.album ?: "-"),
-                        LabelValue(resources.getString(R.string.track), it.trackDetails.track),
-                        LabelValue(resources.getString(R.string.duration), it.trackDetails.duration),
-                        LabelValue(resources.getString(R.string.published), it.trackDetails.published ?: "-"),
-                        LabelValue(resources.getString(R.string.listeners), it.trackDetails.listeners),
-                        LabelValue(resources.getString(R.string.playCount), it.trackDetails.playCount),
-                        LabelValue(resources.getString(R.string.bio), it.trackDetails.bio ?: "-", false)
-                    )
-
-                    recyclerAdapter.updateList(list)
-                }
-            }
+            recyclerAdapter.updateList(it)
         })
 
         viewModel.screenState.observe(viewLifecycleOwner, {

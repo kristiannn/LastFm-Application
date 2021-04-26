@@ -27,7 +27,7 @@ class FriendsRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsRecyclerViewHolder
     {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.friends_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.rv_friends, parent, false)
 
         return FriendsRecyclerViewHolder(view)
     }
@@ -42,7 +42,12 @@ class FriendsRecyclerAdapter(
         holder.scrobblesTextView.text = friendsList[position].totalScrobbles.format()
         holder.profilePictureImageView.loadRoundedImage(friendsList[position].profilePicture)
 
-        holder.itemView.setOnClickListener { onFriendsItemClicked.invoke(friendsList[position].username) }
+        holder.itemView.setOnClickListener {
+            onFriendsItemClicked.invoke(
+                friendsList[position].username,
+                friendsList[position].realName
+            )
+        }
     }
 
     override fun getItemCount(): Int = friendsList.size
@@ -55,4 +60,4 @@ class FriendsRecyclerAdapter(
     }
 }
 
-typealias OnFriendsItemClicked = (username: String) -> Unit
+typealias OnFriendsItemClicked = (username: String, realName: String?) -> Unit

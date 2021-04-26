@@ -42,12 +42,12 @@ class RecentsRecyclerAdapter(
     {
         return if (viewType == TRACK_ITEM_TYPE)
         {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.albums_tracks_layout, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.rv_albums_tracks, parent, false)
 
             TracksRecyclerViewHolder(view)
         } else
         {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.progressbar_layout, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.rv_progress_bar, parent, false)
 
             ProgressBarRecyclerViewHolder(view)
         }

@@ -10,6 +10,7 @@ data class ProfileEntity(
     @PrimaryKey
     @ColumnInfo(collate = ColumnInfo.NOCASE)
     val username: String,
+    val realName: String,
     val profilePicture: String,
     val totalScrobbles: Int
 )
@@ -18,7 +19,7 @@ fun ProfileEntity.mapToRepository(): ProfileWrapper
 {
     return ProfileWrapper(
         username = username,
-        realName = "",
+        realName = realName,
         profilePicture = profilePicture,
         totalScrobbles = totalScrobbles
     )

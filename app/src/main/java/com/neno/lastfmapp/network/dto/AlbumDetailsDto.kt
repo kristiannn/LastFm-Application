@@ -1,8 +1,11 @@
 package com.neno.lastfmapp.network.dto
 
 import com.google.gson.annotations.SerializedName
+import com.neno.lastfmapp.formatToTime
 import com.neno.lastfmapp.repository.models.AlbumDetailsWrapper
+import com.neno.lastfmapp.repository.models.AlbumTrackWrapper
 import java.text.DecimalFormat
+import java.util.concurrent.TimeUnit
 
 data class AlbumDetailsBaseScope(
     @SerializedName("album")
@@ -23,7 +26,9 @@ data class AlbumDetailsDto(
     @SerializedName("wiki")
     val bio: BioDto?,
     @SerializedName("tags")
-    val topTags: TopTags?
+    val topTags: TopTags?,
+    @SerializedName("tracks")
+    val albumTracks: AlbumTracks
 )
 
 fun AlbumDetailsDto.mapToRepository(): AlbumDetailsWrapper
@@ -36,6 +41,7 @@ fun AlbumDetailsDto.mapToRepository(): AlbumDetailsWrapper
         playCount = DecimalFormat.getInstance().format(playCount),
         published = bio?.published,
         bio = bio?.content?.substringBefore("<a")?.trim(),
-        topTags = topTags?.tags?.map { it.name }
+        topTags = topTags?.tags?.map { it.name },
+        albumTracks = albumTracks.albumTracksList.map { AlbumTrackWrapper(it.name, it.duration.formatToTime(TimeUnit.SECONDS)) }
     )
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.neno.lastfmapp.R
 import com.neno.lastfmapp.Result
 import com.neno.lastfmapp.repository.LastFmRepository
 import com.neno.lastfmapp.repository.models.AlbumDetailsWrapper
@@ -20,27 +21,22 @@ class DetailsViewModel(
 ) : ViewModel()
 {
     private val _screenState = MutableLiveData<ScreenState>()
-    private val _detailsState = MutableLiveData<DetailsState>()
-    private var categoryType: DetailsCategoryType
+    private val _detailsState = MutableLiveData<List<DetailsItem>>()
+    private var categoryType: DetailsCategoryType = when
+    {
+        track != null -> DetailsCategoryType.TRACK
+        album != null -> DetailsCategoryType.ALBUM
+        else -> DetailsCategoryType.ARTIST
+    }
 
     val screenState: LiveData<ScreenState>
         get() = _screenState
 
-    val detailsState: LiveData<DetailsState>
+    val detailsState: LiveData<List<DetailsItem>>
         get() = _detailsState
 
     init
     {
-        _detailsState.value = DetailsState()
-        _screenState.value = ScreenState()
-
-        categoryType = when
-        {
-            track != null -> DetailsCategoryType.TRACK
-            album != null -> DetailsCategoryType.ALBUM
-            else -> DetailsCategoryType.ARTIST
-        }
-
         getDetails()
     }
 
@@ -48,73 +44,94 @@ class DetailsViewModel(
     {
         viewModelScope.launch(Dispatchers.IO) {
 
-            when (categoryType)
-            {
-                DetailsCategoryType.ARTIST -> requestDetails {
-                    lastFmRepository.getArtistDetails(
-                        artist = artist!!
-                    )
-                }
-
-                DetailsCategoryType.ALBUM -> requestDetails {
-                    lastFmRepository.getAlbumDetails(
-                        artist = artist!!,
-                        album = album!!
-                    )
-                }
-
-                DetailsCategoryType.TRACK -> requestDetails {
-                    lastFmRepository.getTrackDetails(
-                        artist = artist!!,
-                        track = track!!
-                    )
-                }
-            }
-        }
-    }
-
-    private suspend inline fun <Model> requestDetails(crossinline request: suspend () -> Result<Model>)
-    {
-        _screenState.postValue(
-            ScreenState(
-                isLoading = true,
-                errorMessage = null
-            )
-        )
-
-        val result = request()
-
-        if (result is Result.Success)
-        {
-            when (result.data)
-            {
-                is ArtistDetailsWrapper -> _detailsState.postValue(DetailsState(artistDetails = result.data))
-                is AlbumDetailsWrapper -> _detailsState.postValue(DetailsState(albumDetails = result.data))
-                is TrackDetailsWrapper -> _detailsState.postValue(DetailsState(trackDetails = result.data))
-            }
-
             _screenState.postValue(
                 ScreenState(
-                    isLoading = false,
+                    isLoading = true,
                     errorMessage = null
                 )
             )
-        } else if (result is Result.Error)
-        {
-            _screenState.postValue(
-                ScreenState(
-                    isLoading = false,
-                    errorMessage = result.error.message
+
+            val result = when (categoryType)
+            {
+                DetailsCategoryType.ARTIST -> lastFmRepository.getArtistDetails(artist = artist!!)
+                DetailsCategoryType.ALBUM -> lastFmRepository.getAlbumDetails(artist = artist!!, album = album!!)
+                DetailsCategoryType.TRACK -> lastFmRepository.getTrackDetails(artist = artist!!, track = track!!)
+            }
+
+            if (result is Result.Success)
+            {
+                // Replace the whole list building process with buildList once it's stable
+                val detailsList: List<DetailsItem> = when (categoryType)
+                {
+                    DetailsCategoryType.ARTIST ->
+                    {
+                        result.data as ArtistDetailsWrapper
+
+                        listOf(
+                            DetailsItem.CoverImage(result.data.image),
+                            DetailsItem.Tags(result.data.topTags ?: emptyList()),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.artist, result.data.artist)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.published, result.data.published ?: "-")),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.listeners, result.data.listeners)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.playCount, result.data.playCount)),
+                            DetailsItem.LabelValueVertical(Pair(R.string.bio, result.data.bio ?: "-")),
+                            DetailsItem.SimilarArtists(result.data.similarArtists)
+                        )
+                    }
+                    DetailsCategoryType.ALBUM ->
+                    {
+                        result.data as AlbumDetailsWrapper
+
+                        listOf(
+                            DetailsItem.CoverImage(result.data.image),
+                            DetailsItem.Tags(result.data.topTags ?: emptyList()),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.artist, result.data.artist)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.album, result.data.album)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.published, result.data.published ?: "-")),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.listeners, result.data.listeners)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.playCount, result.data.playCount)),
+                            DetailsItem.LabelValueVertical(Pair(R.string.bio, result.data.bio ?: "-")),
+                            DetailsItem.AlbumTracks(result.data.albumTracks)
+                        )
+                    }
+                    DetailsCategoryType.TRACK ->
+                    {
+                        result.data as TrackDetailsWrapper
+
+                        listOf(
+                            DetailsItem.CoverImage(result.data.image ?: ""),
+                            DetailsItem.Tags(result.data.topTags ?: emptyList()),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.artist, result.data.artist ?: "-")),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.album, result.data.album ?: "-")),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.track, result.data.track)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.duration, result.data.duration)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.published, result.data.published ?: "-")),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.listeners, result.data.listeners)),
+                            DetailsItem.LabelValueHorizontal(Pair(R.string.playCount, result.data.playCount)),
+                            DetailsItem.LabelValueVertical(Pair(R.string.bio, result.data.bio ?: "-"))
+                        )
+                    }
+                }
+
+                _detailsState.postValue(detailsList)
+
+                _screenState.postValue(
+                    ScreenState(
+                        isLoading = false,
+                        errorMessage = null
+                    )
                 )
-            )
+            } else if (result is Result.Error)
+            {
+                _screenState.postValue(
+                    ScreenState(
+                        isLoading = false,
+                        errorMessage = result.error.message
+                    )
+                )
+            }
         }
     }
-
-    data class DetailsState(
-        val artistDetails: ArtistDetailsWrapper? = null,
-        val albumDetails: AlbumDetailsWrapper? = null,
-        val trackDetails: TrackDetailsWrapper? = null
-    )
 
     data class ScreenState(
         val isLoading: Boolean = false,

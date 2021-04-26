@@ -1,9 +1,10 @@
 package com.neno.lastfmapp.network.dto
 
 import com.google.gson.annotations.SerializedName
-import com.neno.lastfmapp.msToTime
+import com.neno.lastfmapp.formatToTime
 import com.neno.lastfmapp.repository.models.TrackDetailsWrapper
 import java.text.DecimalFormat
+import java.util.concurrent.TimeUnit
 
 data class TrackDetailsBaseScope(
     @SerializedName("track")
@@ -43,7 +44,7 @@ fun TrackDetailsDto.mapToRepository(): TrackDetailsWrapper
         album = albumDetails?.album,
         artist = albumDetails?.artist,
         image = albumDetails?.images?.get(3)?.url,
-        duration = duration.msToTime,
+        duration = duration.formatToTime(TimeUnit.MILLISECONDS),
         listeners = DecimalFormat.getInstance().format(listeners),
         playCount = DecimalFormat.getInstance().format(playCount),
         published = bio?.published,

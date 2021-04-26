@@ -3,29 +3,28 @@ package com.neno.lastfmapp
 import android.content.res.Resources
 import android.view.View
 import android.widget.ImageView
-import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.lang.StringBuilder
 import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
 
 inline val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-inline val Long.msToTime: String
-    get()
-    {
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(this)
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(this) - TimeUnit.MINUTES.toSeconds(minutes)
+fun Long.formatToTime(timeUnit: TimeUnit): String
+{
+    return String.format("%d:%02d",
+        timeUnit.toMinutes(this),
+        timeUnit.toSeconds(this) -
+                TimeUnit.MINUTES.toSeconds(timeUnit.toMinutes(this))
+    )
+}
 
-        return String.format("$minutes minutes, $seconds seconds")
-    }
-
-inline val String.toQuery: String
-    get()
-    {
-        return this.replace(" ", "+")
-    }
+fun String.toQuery(): String
+{
+    return this.replace(" ", "+")
+}
 
 fun Int.format(): String
 {
@@ -65,9 +64,4 @@ fun ImageView.loadRoundedImage(
         .load(imageUrl)
         .transform(RoundedCorners(roundedCorners))
         .into(this)
-}
-
-fun <T> MutableLiveData<T>.modifyValue(transform: T.() -> T)
-{
-    this.value = this.value?.run(transform)
 }

@@ -32,12 +32,12 @@ class ArtistsRecyclerAdapter(
     {
         return if (viewType == ARTIST_ITEM_TYPE)
         {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.artists_layout, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.rv_artists, parent, false)
 
             ArtistsRecyclerViewHolder(view)
         } else
         {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.progressbar_layout, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.rv_progress_bar, parent, false)
 
             ProgressBarRecyclerViewHolder(view)
         }

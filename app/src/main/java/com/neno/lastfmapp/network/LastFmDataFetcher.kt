@@ -63,17 +63,17 @@ class LastFmDataFetcher(
     )
 
     override suspend fun getTrackDetails(artist: String, track: String): Result<TrackDetailsWrapper> = executeRequest(
-        { service.getTrackDetails(artist.toQuery, track.toQuery, API_KEY).execute() },
+        { service.getTrackDetails(artist.toQuery(), track.toQuery(), API_KEY).execute() },
         { it.trackDetailsDto.mapToRepository() }
     )
 
     override suspend fun getAlbumDetails(artist: String, album: String): Result<AlbumDetailsWrapper> = executeRequest(
-        { service.getAlbumDetails(artist.toQuery, album.toQuery, API_KEY).execute() },
+        { service.getAlbumDetails(artist.toQuery(), album.toQuery(), API_KEY).execute() },
         { it.albumDetailsDto.mapToRepository() }
     )
 
     override suspend fun getArtistDetails(artist: String): Result<ArtistDetailsWrapper> = executeRequest(
-        { service.getArtistDetails(artist.toQuery, API_KEY).execute() },
+        { service.getArtistDetails(artist.toQuery(), API_KEY).execute() },
         { it.artistDetailsDto.mapToRepository() }
     )
 

@@ -70,13 +70,14 @@ class FriendsFragment : SecondaryFragment()
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerAdapter = FriendsRecyclerAdapter(
             friendsList = listOf(),
-            onFriendsItemClicked = { username ->
+            onFriendsItemClicked = { username, realName ->
                 val mainActivity = activity as MainActivity
 
                 ChartsFragment().also {
                     val bundle = Bundle()
                     bundle.putString(BundleStrings.USERNAME_KEY, username)
                     bundle.putString(BundleStrings.PERIOD_KEY, mainActivity.getSelectedPeriod())
+                    bundle.putString(BundleStrings.REALNAME_KEY, realName)
                     it.arguments = bundle
 
                     parentFragmentManager.addFragment(R.id.fragment_container, it)

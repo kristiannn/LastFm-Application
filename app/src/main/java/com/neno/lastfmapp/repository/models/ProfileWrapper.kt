@@ -13,6 +13,7 @@ fun ProfileWrapper.mapToDb(): ProfileEntity
 {
     return ProfileEntity(
         username = username,
+        realName = realName,
         profilePicture = profilePicture,
         totalScrobbles = totalScrobbles
     )

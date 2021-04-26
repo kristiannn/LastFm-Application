@@ -111,8 +111,8 @@ class RecentsFragment : SecondaryFragment()
                         }
 
                         ValueAnimator.ofFloat(
-                            scrobbleButton.x,
-                            scrobbleButton.x + (resources.getDimension(R.dimen.scrobble_button_end_margin) - 16.dp)
+                            resources.displayMetrics.widthPixels.toFloat(),
+                            resources.displayMetrics.widthPixels.toFloat() - (136.dp + 16.dp)
                         ).also {
                             it.duration = 300
                             it.addUpdateListener { animator -> scrobbleButton.x = animator.animatedValue as Float }
@@ -130,8 +130,8 @@ class RecentsFragment : SecondaryFragment()
                         }
 
                         ValueAnimator.ofFloat(
-                            scrobbleButton.x,
-                            scrobbleButton.x - (resources.getDimension(R.dimen.scrobble_button_end_margin) - 16.dp)
+                            resources.displayMetrics.widthPixels.toFloat() - (136.dp + 16.dp),
+                            resources.displayMetrics.widthPixels.toFloat()
                         ).also {
                             it.duration = 300
                             it.addUpdateListener { animator -> scrobbleButton.x = animator.animatedValue as Float }

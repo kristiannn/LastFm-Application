@@ -14,7 +14,7 @@
     // Scrobble Button
     <dimen name="scrobble_button_height">64dp</dimen>
     <dimen name="scrobble_button_width">136dp</dimen>
-    <dimen name="scrobble_button_end_margin">-136dp</dimen>
+    <dimen name="scrobble_button_end_margin">16dp</dimen>
     <dimen name="scrobble_button_bottom_margin">116dp</dimen>
 
     // Periods Button

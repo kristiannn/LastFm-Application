@@ -284,7 +284,7 @@ class MainActivity : AppCompatActivity()
                 it.start()
             }
 
-            ValueAnimator.ofFloat(tabsLayout.y, tabsLayout.y - tabsLayout.height).also {
+            ValueAnimator.ofFloat(56.dp.toFloat(), 0f).also {
                 it.duration = 300
                 it.addUpdateListener { animator -> tabsLayout.y = animator.animatedValue as Float }
                 it.start()
@@ -299,7 +299,7 @@ class MainActivity : AppCompatActivity()
                 it.start()
             }
 
-            ValueAnimator.ofFloat(tabsLayout.y, tabsLayout.y + tabsLayout.height).also {
+            ValueAnimator.ofFloat(0f, 56.dp.toFloat()).also {
                 it.duration = 300
                 it.addUpdateListener { animator -> tabsLayout.y = animator.animatedValue as Float }
                 it.start()
@@ -331,6 +331,8 @@ class MainActivity : AppCompatActivity()
 
     fun setToolbarVisibility(visible: Boolean)
     {
+        if (appBar.isVisible == visible) return
+
         if (visible)
         {
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
