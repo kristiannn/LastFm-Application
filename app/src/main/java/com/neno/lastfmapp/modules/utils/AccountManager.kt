@@ -16,6 +16,10 @@ interface AccountManager
 
     fun getSessionKey(): String
 
+    fun setCurrentTheme(theme: Int)
+
+    fun getCurrentTheme(): Int
+
     fun isUserLogged(): Boolean
 
     fun logoutUser()

@@ -251,9 +251,3 @@ class DetailsRecyclerAdapter(
         override fun getItemCount(): Int = tracksList.size
     }
 }
-
-data class LabelValue(
-    val label: String?,
-    val value: String?,
-    val horizontal: Boolean? = true
-)

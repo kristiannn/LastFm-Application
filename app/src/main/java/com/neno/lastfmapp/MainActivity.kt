@@ -22,6 +22,7 @@ import com.neno.lastfmapp.modules.charts.ChartsFragment
 import com.neno.lastfmapp.modules.friends.FriendsFragment
 import com.neno.lastfmapp.modules.login.LoginFragment
 import com.neno.lastfmapp.modules.recents.RecentsFragment
+import com.neno.lastfmapp.modules.settings.SettingsFragment
 import com.neno.lastfmapp.modules.utils.*
 import com.neno.lastfmapp.modules.utils.fragments.*
 import com.neno.lastfmapp.network.utils.LastFmPeriodParams
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
+        setTheme(accountManager.getCurrentTheme())
         setContentView(R.layout.activity_main)
 
         setupNavigationDrawer()
@@ -71,6 +72,7 @@ class MainActivity : AppCompatActivity()
 
                 animator.doOnEnd { drawerToggle.syncState() }
 
+                icon.color = periodsButton.currentTextColor
                 toolbar.navigationIcon = icon
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else if (lastFragment is SecondaryFragment)
@@ -82,10 +84,13 @@ class MainActivity : AppCompatActivity()
                 animator.addUpdateListener { animation -> icon.progress = animation.animatedValue as Float }
                 animator.start()
 
+                icon.color = periodsButton.currentTextColor
                 toolbar.navigationIcon = icon
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
         }
+
+        if (savedInstanceState != null) return
 
         if (accountManager.isUserLogged())
         {
@@ -124,6 +129,7 @@ class MainActivity : AppCompatActivity()
             R.string.navigation_drawer_close
         )
 
+        drawerToggle.drawerArrowDrawable.color = periodsButton.currentTextColor
         drawer.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
 
@@ -182,6 +188,11 @@ class MainActivity : AppCompatActivity()
                 {
                     accountManager.logoutUser()
                     LoginFragment().also { supportFragmentManager.setRootFragment(R.id.fragment_container, it) }
+                }
+
+                R.id.nav_settings ->
+                {
+                    supportFragmentManager.addFragment(R.id.fragment_container, SettingsFragment())
                 }
             }
 

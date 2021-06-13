@@ -6,23 +6,57 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">?colorBackground</item>
+        <item name="android:popupBackground">?colorBackground</item>
+        <item name="android:textColor">?colorText</item>
+        <item name="android:textColorSecondary">?colorTextFaded</item>
+        <item name="android:actionMenuTextColor">@color/colorGreyLight</item>
+        <item name="android:popupMenuStyle">@style/PopupWindow</item>
+    </style>
+
+    <style name="LightTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
+        <item name="colorBackground">@color/colorWhite</item>
+        <item name="colorText">@color/colorBlack</item>
+        <item name="colorTextFaded">@color/colorGrey</item>
+        <item name="colorOutlineLight">@color/colorTransparentGrey</item>
+        <item name="colorOutline">@color/colorBlack</item>
+        <item name="colorProgressBar">@color/colorPrimary</item>
+        <item name="colorTagsBackground">@color/colorTransparentGrey</item>
+        <item name="colorTagsText">@color/colorBlack</item>
+    </style>
+
+    <style name="DarkMutedTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/colorBlack</item>
+        <item name="colorPrimaryDark">@color/colorBlack</item>
+        <item name="colorPrimaryLight">@color/colorGrey</item>
+        <item name="colorBackground">@color/colorBlack</item>
+        <item name="colorText">@color/colorGreyLight</item>
+        <item name="colorTextFaded">@color/colorGrey</item>
+        <item name="colorOutlineLight">@color/colorGrey</item>
+        <item name="colorOutline">@color/colorGrey</item>
+        <item name="colorProgressBar">@color/colorGrey</item>
+        <item name="colorTagsBackground">@color/colorGrey</item>
+        <item name="colorTagsText">@color/colorTransparentGrey</item>
     </style>
 
     <!--Progress bar-->
     <style name="ProgressBarCircular">
         <item name="android:indeterminate">true</item>
-        <item name="android:indeterminateTint">@color/colorPrimary</item>
+        <item name="android:indeterminateTint">?colorProgressBar</item>
     </style>
 
     <style name="ProgressBarHorizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:indeterminate">true</item>
-        <item name="android:indeterminateTint">@color/colorPrimary</item>
+        <item name="android:indeterminateTint">?colorProgressBar</item>
         <item name="android:indeterminateTintMode">src_atop</item>
     </style>
 
     <!--Text Styles-->
     <style name="TextStyle">
-        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColor">?attr/colorText</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/fontSize_medium</item>
     </style>
@@ -34,7 +68,7 @@
 
     <style name="TextStyle.Secondary">
         <item name="android:textSize">@dimen/fontSize_small</item>
-        <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:textColor">?attr/colorTextFaded</item>
         <item name="android:maxLines">1</item>
         <item name="android:gravity">center_vertical</item>
     </style>
@@ -55,7 +89,7 @@
 
     <style name="TextStyle.Title">
         <item name="android:textSize">@dimen/fontSize_xlarge</item>
-        <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:textColor">?attr/colorTextFaded</item>
     </style>
 
     <style name="TextStyle.Dialog" parent="TextStyle">
@@ -66,7 +100,7 @@
     <style name="EditText">
         <item name="android:inputType">textPersonName</item>
         <item name="android:ems">12</item>
-        <item name="android:textColorHint">@color/colorGreyLight</item>
+        <item name="android:textColorHint">?attr/colorTextFaded</item>
     </style>
 
     <style name="EditText.Password">
@@ -75,7 +109,7 @@
 
     <!--Button Styles-->
     <style name="Button">
-        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColor">?colorText</item>
         <item name="android:background">@drawable/button_drawable</item>
     </style>
 
@@ -85,7 +119,7 @@
     </style>
 
     <style name="ButtonBorderless" parent="Widget.AppCompat.Button.Borderless">
-        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColor">?colorText</item>
         <item name="android:textSize">@dimen/fontSize_small</item>
         <item name="android:textAllCaps">false</item>
     </style>
@@ -100,7 +134,22 @@
     </style>
 
     <style name="TabLayoutStyle">
-        <item name="tabIndicatorColor">@color/colorBlack</item>
+        <item name="tabIndicatorColor">?colorText</item>
+        <item name="tabTextColor">?colorText</item>
     </style>
 
+    <!--Navigation View-->
+    <style name="NavigationViewStyle" parent="Widget.Design.NavigationView">
+        <item name="itemIconTint">?colorText</item>
+        <item name="itemTextColor">?colorText</item>
+    </style>
+
+    <!--Popup Window-->
+    <style name="PopupWindow" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">?colorBackground</item>
+    </style>
+
+    <!--    <style name="DropdownMenuItem" parent="Widget.AppCompat.DropDownItem.Spinner">
+            <item name="android:background">?colorBackground</item>
+        </style>-->
 </resources>

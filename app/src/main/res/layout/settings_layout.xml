@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvThemes"
+        style="@style/TextStyle.Main"
+        android:layout_width="wrap_content"
+        android:text="@string/select_theme"
+        android:layout_height="@dimen/label_text_view_height"
+        android:layout_alignTop="@id/spinnerThemes"
+        android:layout_alignBottom="@id/spinnerThemes"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@id/spinnerThemes"/>
+
+    <Spinner
+        android:id="@+id/spinnerThemes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"/>
+
+</RelativeLayout>

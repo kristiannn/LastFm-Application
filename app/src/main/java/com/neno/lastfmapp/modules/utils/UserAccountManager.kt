@@ -2,6 +2,7 @@ package com.neno.lastfmapp.modules.utils
 
 import android.app.Application
 import android.content.Context
+import com.neno.lastfmapp.R
 import com.neno.lastfmapp.network.utils.LastFmPeriodParams
 
 class UserAccountManager(
@@ -30,6 +31,16 @@ class UserAccountManager(
         return sharedPreferences.getString(PROFILE_SESSION_KEY, "")!!
     }
 
+    override fun setCurrentTheme(theme: Int)
+    {
+        sharedPreferences.edit().putInt(CURRENT_THEME, theme).apply()
+    }
+
+    override fun getCurrentTheme(): Int
+    {
+        return sharedPreferences.getInt(CURRENT_THEME, R.style.LightTheme)
+    }
+
     override fun getUser(): String = sharedPreferences.getString(PROFILE_NAME, "")!!
 
     override fun getProfilePicture(): String = sharedPreferences.getString(PROFILE_PICTURE, "")!!
@@ -55,5 +66,6 @@ class UserAccountManager(
         private const val PROFILE_SESSION_KEY = "session"
         private const val PROFILE_PICTURE = "picture"
         private const val PROFILE_PERIOD = "period"
+        private const val CURRENT_THEME = "theme"
     }
 }
