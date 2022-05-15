@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.neno.lastfmapp.MainActivity
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.databinding.ListsLayoutBinding
 import com.neno.lastfmapp.modules.charts.ChartsFragment
 import com.neno.lastfmapp.modules.dialog.NotifyDialog
 import com.neno.lastfmapp.modules.utils.BundleStrings
@@ -24,10 +22,11 @@ import org.koin.core.parameter.parametersOf
 
 class FriendsFragment : SecondaryFragment()
 {
-    private lateinit var recyclerView: RecyclerView
+    //    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: ListsLayoutBinding
     private lateinit var recyclerAdapter: FriendsRecyclerAdapter
-    private lateinit var progressBar: ProgressBar
-    private lateinit var swipeContainer: SwipeRefreshLayout
+//    private lateinit var progressBar: ProgressBar
+//    private lateinit var swipeContainer: SwipeRefreshLayout
 
     private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }
 
@@ -37,37 +36,28 @@ class FriendsFragment : SecondaryFragment()
 
     override fun currentNavigationUser(): String? = username
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        return inflater.inflate(R.layout.lists_layout, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
-
-        setObservers()
+        binding = ListsLayoutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViews(view)
+        setObservers()
+        setupViews()
     }
 
-    private fun setupViews(view: View)
+    private fun setupViews()
     {
-        recyclerView = view.findViewById(R.id.recyclerView)
-        progressBar = view.findViewById(R.id.progressBar)
-        swipeContainer = view.findViewById(R.id.swipeContainer)
-
-        swipeContainer.setOnRefreshListener {
+        binding.swipeContainer.setOnRefreshListener {
             viewModel.getFriends()
-            swipeContainer.isRefreshing = false
+            binding.swipeContainer.isRefreshing = false
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerAdapter = FriendsRecyclerAdapter(
             friendsList = listOf(),
             onFriendsItemClicked = { username, realName ->
@@ -84,30 +74,30 @@ class FriendsFragment : SecondaryFragment()
                 }
             }
         )
-        recyclerView.adapter = recyclerAdapter
+        binding.recyclerView.adapter = recyclerAdapter
     }
 
     private fun setObservers()
     {
-        viewModel.friendsListState.observe(viewLifecycleOwner, {
+        viewModel.friendsListState.observe(viewLifecycleOwner) {
             recyclerAdapter.updateList(it)
-        })
+        }
 
-        viewModel.screenState.observe(viewLifecycleOwner, {
+        viewModel.screenState.observe(viewLifecycleOwner) {
             when
             {
-                it.isLoading -> progressBar.setVisible()
+                it.isLoading -> binding.progressBar.setVisible()
 
                 it.errorMessage != null ->
                 {
-                    progressBar.setGone()
+                    binding.progressBar.setGone()
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
 
-                else -> progressBar.setGone()
+                else -> binding.progressBar.setGone()
             }
-        })
+        }
     }
 }

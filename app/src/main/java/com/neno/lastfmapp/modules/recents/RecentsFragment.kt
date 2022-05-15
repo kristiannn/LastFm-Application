@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
@@ -14,8 +12,8 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.databinding.ListsLayoutBinding
 import com.neno.lastfmapp.dp
 import com.neno.lastfmapp.modules.details.DetailsFragment
 import com.neno.lastfmapp.modules.dialog.NotifyDialog
@@ -29,11 +27,9 @@ import org.koin.core.parameter.parametersOf
 
 class RecentsFragment : SecondaryFragment()
 {
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: ListsLayoutBinding
     private lateinit var recyclerAdapter: RecentsRecyclerAdapter
-    private lateinit var progressBar: ProgressBar
-    private lateinit var scrobbleButton: Button
-    private lateinit var swipeContainer: SwipeRefreshLayout
+
     private var isReloading = false
 
     private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }
@@ -44,43 +40,33 @@ class RecentsFragment : SecondaryFragment()
 
     override fun currentNavigationUser(): String? = username
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        return inflater.inflate(R.layout.lists_layout, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
-
-        setObservers()
+        binding = ListsLayoutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViews(view)
+        setObservers()
+        setupViews()
     }
 
-    private fun setupViews(view: View)
+    private fun setupViews()
     {
-        recyclerView = view.findViewById(R.id.recyclerView)!!
-        progressBar = view.findViewById(R.id.progressBar)!!
-        scrobbleButton = view.findViewById(R.id.buttonScrobble)!!
-        swipeContainer = view.findViewById(R.id.swipeContainer)!!
-
-        swipeContainer.setOnRefreshListener {
+        binding.swipeContainer.setOnRefreshListener {
             isReloading = true
             viewModel.getRecentTracks(true)
-            swipeContainer.isRefreshing = false
+            binding.swipeContainer.isRefreshing = false
         }
 
         val layoutManager = LinearLayoutManager(activity)
 
-        recyclerView.layoutManager = layoutManager
+        binding.recyclerView.layoutManager = layoutManager
 
-        scrobbleButton.setOnClickListener { viewModel.scrobbleTracks(recyclerAdapter.getSelectedItems()) }
+        binding.buttonScrobble.setOnClickListener { viewModel.scrobbleTracks(recyclerAdapter.getSelectedItems()) }
 
         recyclerAdapter = RecentsRecyclerAdapter(
             tracksList = listOf(),
@@ -99,14 +85,16 @@ class RecentsFragment : SecondaryFragment()
             onSelectionChange = { selectionMode, selectedCount ->
                 if (selectionMode)
                 {
-                    scrobbleButton.text = resources.getString(R.string.scrobble_songs, selectedCount)
+                    binding.buttonScrobble.text = resources.getString(R.string.scrobble_songs, selectedCount)
 
-                    if (!scrobbleButton.isVisible)
+                    if (!binding.buttonScrobble.isVisible)
                     {
                         ValueAnimator.ofFloat(0f, 1f).also {
-                            it.doOnStart { scrobbleButton.setVisible() }
+                            it.doOnStart { binding.buttonScrobble.setVisible() }
                             it.duration = 300
-                            it.addUpdateListener { animator -> scrobbleButton.alpha = animator.animatedValue as Float }
+                            it.addUpdateListener { animator ->
+                                binding.buttonScrobble.alpha = animator.animatedValue as Float
+                            }
                             it.start()
                         }
 
@@ -115,17 +103,21 @@ class RecentsFragment : SecondaryFragment()
                             resources.displayMetrics.widthPixels.toFloat() - (136.dp + 16.dp)
                         ).also {
                             it.duration = 300
-                            it.addUpdateListener { animator -> scrobbleButton.x = animator.animatedValue as Float }
+                            it.addUpdateListener { animator ->
+                                binding.buttonScrobble.x = animator.animatedValue as Float
+                            }
                             it.start()
                         }
                     }
                 } else
                 {
-                    if (!scrobbleButton.isGone)
+                    if (!binding.buttonScrobble.isGone)
                     {
                         ValueAnimator.ofFloat(1f, 0f).also {
                             it.duration = 300
-                            it.addUpdateListener { animator -> scrobbleButton.alpha = animator.animatedValue as Float }
+                            it.addUpdateListener { animator ->
+                                binding.buttonScrobble.alpha = animator.animatedValue as Float
+                            }
                             it.start()
                         }
 
@@ -134,19 +126,21 @@ class RecentsFragment : SecondaryFragment()
                             resources.displayMetrics.widthPixels.toFloat()
                         ).also {
                             it.duration = 300
-                            it.addUpdateListener { animator -> scrobbleButton.x = animator.animatedValue as Float }
+                            it.addUpdateListener { animator ->
+                                binding.buttonScrobble.x = animator.animatedValue as Float
+                            }
                             it.start()
-                            it.doOnEnd { scrobbleButton.setGone() }
+                            it.doOnEnd { binding.buttonScrobble.setGone() }
                         }
                     }
                 }
             }
         )
 
-        recyclerView.adapter = recyclerAdapter
-        recyclerView.setHasFixedSize(true)
+        binding.recyclerView.adapter = recyclerAdapter
+        binding.recyclerView.setHasFixedSize(true)
 
-        recyclerView.addOnScrollListener(
+        binding.recyclerView.addOnScrollListener(
             object : RecyclerView.OnScrollListener()
             {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
@@ -168,26 +162,26 @@ class RecentsFragment : SecondaryFragment()
 
     private fun setObservers()
     {
-        viewModel.recentsListState.observe(viewLifecycleOwner, {
+        viewModel.recentsListState.observe(viewLifecycleOwner) {
             recyclerAdapter.updateList(it)
 
             if (isReloading)
             {
-                recyclerView.scrollToPosition(0)
+                binding.recyclerView.scrollToPosition(0)
                 isReloading = false
             }
-        })
+        }
 
-        viewModel.screenState.observe(viewLifecycleOwner, {
+        viewModel.screenState.observe(viewLifecycleOwner) {
             when
             {
-                it.isLoading -> progressBar.visibility = View.VISIBLE
+                it.isLoading -> binding.progressBar.visibility = View.VISIBLE
 
-                it.isListUpdating -> progressBar.visibility = View.GONE
+                it.isListUpdating -> binding.progressBar.visibility = View.GONE
 
                 it.errorMessage != null ->
                 {
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     recyclerAdapter.removeLoadingItem()
@@ -201,7 +195,7 @@ class RecentsFragment : SecondaryFragment()
                     val errorMessage = if (failedScrobbles == 0) resources.getString(R.string.scrobble_successful)
                     else resources.getString(R.string.scrobble_unsuccessful, failedScrobbles)
 
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                     NotifyDialog(errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     recyclerAdapter.removeLoadingItem()
@@ -209,12 +203,12 @@ class RecentsFragment : SecondaryFragment()
 
                 else ->
                 {
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
 
                     recyclerAdapter.removeLoadingItem()
                 }
             }
-        })
+        }
     }
 
 }

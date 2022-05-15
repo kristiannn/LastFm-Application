@@ -3,7 +3,6 @@ package com.neno.lastfmapp
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
@@ -16,30 +15,29 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
+import com.neno.lastfmapp.databinding.ActivityMainBinding
 import com.neno.lastfmapp.modules.charts.ChartsFragment
 import com.neno.lastfmapp.modules.friends.FriendsFragment
 import com.neno.lastfmapp.modules.login.LoginFragment
 import com.neno.lastfmapp.modules.recents.RecentsFragment
 import com.neno.lastfmapp.modules.settings.SettingsFragment
-import com.neno.lastfmapp.modules.utils.*
+import com.neno.lastfmapp.modules.utils.AccountManager
+import com.neno.lastfmapp.modules.utils.BundleStrings
 import com.neno.lastfmapp.modules.utils.fragments.*
 import com.neno.lastfmapp.network.utils.LastFmPeriodParams
-import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity()
 {
     private lateinit var drawerToggle: ActionBarDrawerToggle
+    private lateinit var binding: ActivityMainBinding
     private var currentUser: String? = null
 
-    private val drawer: DrawerLayout by lazy { findViewById(R.id.drawer_layout) }
-    private val navigationView: NavigationView by lazy { findViewById(R.id.nav_view) }
-    private val navigationHeader: View by lazy { navigationView.getHeaderView(0) }
+    private val navigationHeader: View by lazy { binding.navView.getHeaderView(0) }
     private val navigationUsername: TextView by lazy { navigationHeader.findViewById(R.id.tvUsername) }
     private val navigationProfilePicture: ImageView by lazy { navigationHeader.findViewById(R.id.ivProfilePicture) }
-    private val periodsButton: Button by lazy { findViewById(R.id.buttonPeriods) }
+
     private val accountManager: AccountManager by inject()
 
     val tabsLayout: TabLayout by lazy { findViewById(R.id.tabLayout) }
@@ -48,7 +46,8 @@ class MainActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setTheme(accountManager.getCurrentTheme())
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupNavigationDrawer()
         updateNavigationHeader()
@@ -72,9 +71,9 @@ class MainActivity : AppCompatActivity()
 
                 animator.doOnEnd { drawerToggle.syncState() }
 
-                icon.color = periodsButton.currentTextColor
-                toolbar.navigationIcon = icon
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                icon.color = binding.buttonPeriods.currentTextColor
+                binding.toolbar.navigationIcon = icon
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else if (lastFragment is SecondaryFragment)
             {
                 val icon = DrawerArrowDrawable(this@MainActivity)
@@ -84,9 +83,9 @@ class MainActivity : AppCompatActivity()
                 animator.addUpdateListener { animation -> icon.progress = animation.animatedValue as Float }
                 animator.start()
 
-                icon.color = periodsButton.currentTextColor
-                toolbar.navigationIcon = icon
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                icon.color = binding.buttonPeriods.currentTextColor
+                binding.toolbar.navigationIcon = icon
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
         }
 
@@ -110,9 +109,9 @@ class MainActivity : AppCompatActivity()
 
     override fun onBackPressed()
     {
-        if (drawer.isDrawerOpen(GravityCompat.START))
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START))
         {
-            drawer.closeDrawer(GravityCompat.START)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else
         {
             super.onBackPressed()
@@ -123,28 +122,28 @@ class MainActivity : AppCompatActivity()
     {
         drawerToggle = ActionBarDrawerToggle(
             this,
-            drawer,
-            toolbar,
+            binding.drawerLayout,
+            binding.toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
 
-        drawerToggle.drawerArrowDrawable.color = periodsButton.currentTextColor
-        drawer.addDrawerListener(drawerToggle)
+        drawerToggle.drawerArrowDrawable.color = binding.buttonPeriods.currentTextColor
+        binding.drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
 
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
 
             if (supportFragmentManager.fragments.last() is ListsFragment)
             {
-                drawer.openDrawer(navigationView)
+                binding.drawerLayout.openDrawer(binding.navView)
             } else
             {
                 onBackPressed()
             }
         }
 
-        navigationView.setNavigationItemSelectedListener { item ->
+        binding.navView.setNavigationItemSelectedListener { item ->
             when (item.itemId)
             {
                 R.id.nav_charts ->
@@ -196,7 +195,7 @@ class MainActivity : AppCompatActivity()
                 }
             }
 
-            drawer.closeDrawer(GravityCompat.START)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
     }
@@ -206,17 +205,17 @@ class MainActivity : AppCompatActivity()
         //Set button text
         when (getSelectedPeriod())
         {
-            LastFmPeriodParams.Overall -> periodsButton.text = resources.getString(R.string.period_overall)
-            LastFmPeriodParams.Year -> periodsButton.text = resources.getString(R.string.period_year)
-            LastFmPeriodParams.HalfYear -> periodsButton.text = resources.getString(R.string.period_half_year)
-            LastFmPeriodParams.Quarter -> periodsButton.text = resources.getString(R.string.period_quarter)
-            LastFmPeriodParams.Month -> periodsButton.text = resources.getString(R.string.period_month)
-            LastFmPeriodParams.Week -> periodsButton.text = resources.getString(R.string.period_week)
+            LastFmPeriodParams.Overall -> binding.buttonPeriods.text = resources.getString(R.string.period_overall)
+            LastFmPeriodParams.Year -> binding.buttonPeriods.text = resources.getString(R.string.period_year)
+            LastFmPeriodParams.HalfYear -> binding.buttonPeriods.text = resources.getString(R.string.period_half_year)
+            LastFmPeriodParams.Quarter -> binding.buttonPeriods.text = resources.getString(R.string.period_quarter)
+            LastFmPeriodParams.Month -> binding.buttonPeriods.text = resources.getString(R.string.period_month)
+            LastFmPeriodParams.Week -> binding.buttonPeriods.text = resources.getString(R.string.period_week)
         }
 
-        periodsButton.setOnClickListener {
+        binding.buttonPeriods.setOnClickListener {
 
-            val popup = PopupMenu(this, periodsButton)
+            val popup = PopupMenu(this, binding.buttonPeriods)
             popup.menuInflater.inflate(R.menu.periods_popup, popup.menu)
 
             popup.setOnMenuItemClickListener { menuItem ->
@@ -262,7 +261,7 @@ class MainActivity : AppCompatActivity()
     private fun periodSelected(selectedPeriod: String, buttonTitle: String)
     {
         accountManager.setPeriodPreference(selectedPeriod)
-        periodsButton.text = buttonTitle
+        binding.buttonPeriods.text = buttonTitle
 
         ChartsFragment().also {
             val bundle = Bundle()
@@ -283,7 +282,7 @@ class MainActivity : AppCompatActivity()
 
     fun getSelectedPeriod(): String = accountManager.getPeriodPreference()
 
-    fun setToolbarTitle(title: String?) = title.let { toolbar.title = it ?: "" }
+    fun setToolbarTitle(title: String?) = title.let { binding.toolbar.title = it ?: "" }
 
     fun setTabsVisibility(visible: Boolean)
     {
@@ -336,22 +335,22 @@ class MainActivity : AppCompatActivity()
                 supportFragmentManager.setRootFragment(R.id.fragment_container, it)
             }
 
-            drawer.closeDrawer(GravityCompat.START)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
     }
 
     fun setToolbarVisibility(visible: Boolean)
     {
-        if (appBar.isVisible == visible) return
+        if (binding.appBar.isVisible == visible) return
 
         if (visible)
         {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-            appBar.visibility = View.VISIBLE
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            binding.appBar.visibility = View.VISIBLE
         } else
         {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            appBar.visibility = View.GONE
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            binding.appBar.visibility = View.GONE
         }
     }
 
@@ -359,17 +358,17 @@ class MainActivity : AppCompatActivity()
     {
         if (visible)
         {
-            periodsButton.visibility = View.VISIBLE
-            toolbar.setTitleMargin(
-                toolbar.titleMarginStart,
-                toolbar.titleMarginTop,
+            binding.buttonPeriods.visibility = View.VISIBLE
+            binding.toolbar.setTitleMargin(
+                binding.toolbar.titleMarginStart,
+                binding.toolbar.titleMarginTop,
                 resources.getDimension(R.dimen.periods_button_width).toInt(),
-                toolbar.titleMarginBottom
+                binding.toolbar.titleMarginBottom
             )
 
             val animator = ValueAnimator.ofFloat(0f, 1f)
             animator.duration = 300
-            animator.addUpdateListener { animation -> periodsButton.alpha = animation.animatedValue as Float }
+            animator.addUpdateListener { animation -> binding.buttonPeriods.alpha = animation.animatedValue as Float }
             animator.start()
 
             animator.doOnEnd { drawerToggle.syncState() }
@@ -377,16 +376,16 @@ class MainActivity : AppCompatActivity()
         {
             val animator = ValueAnimator.ofFloat(1f, 0f)
             animator.duration = 300
-            animator.addUpdateListener { animation -> periodsButton.alpha = animation.animatedValue as Float }
+            animator.addUpdateListener { animation -> binding.buttonPeriods.alpha = animation.animatedValue as Float }
             animator.start()
 
             animator.doOnEnd {
-                periodsButton.visibility = View.GONE
-                toolbar.setTitleMargin(
-                    toolbar.titleMarginStart,
-                    toolbar.titleMarginTop,
-                    toolbar.titleMarginStart,
-                    toolbar.titleMarginBottom
+                binding.buttonPeriods.visibility = View.GONE
+                binding.toolbar.setTitleMargin(
+                    binding.toolbar.titleMarginStart,
+                    binding.toolbar.titleMarginTop,
+                    binding.toolbar.titleMarginStart,
+                    binding.toolbar.titleMarginBottom
                 )
             }
         }

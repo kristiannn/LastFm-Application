@@ -15,7 +15,8 @@ import com.neno.lastfmapp.database.entities.*
         AlbumUpdateEntity::class,
         TrackUpdateEntity::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 abstract class LastFmDatabase : RoomDatabase()
 {

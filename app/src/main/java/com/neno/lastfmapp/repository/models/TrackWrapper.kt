@@ -2,7 +2,7 @@ package com.neno.lastfmapp.repository.models
 
 import android.os.Parcelable
 import com.neno.lastfmapp.database.entities.TrackEntity
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TrackWrapper(

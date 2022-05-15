@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.neno.lastfmapp.R
+import com.neno.lastfmapp.databinding.DetailsListLayoutBinding
 import com.neno.lastfmapp.modules.dialog.NotifyDialog
 import com.neno.lastfmapp.modules.utils.BundleStrings
 import com.neno.lastfmapp.modules.utils.fragments.SecondaryFragment
@@ -19,9 +17,7 @@ import org.koin.core.parameter.parametersOf
 
 class DetailsFragment : SecondaryFragment()
 {
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var progressBar: ProgressBar
-
+    private lateinit var binding: DetailsListLayoutBinding
     private val recyclerAdapter: DetailsRecyclerAdapter by lazy { DetailsRecyclerAdapter() }
 
     private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }
@@ -35,52 +31,46 @@ class DetailsFragment : SecondaryFragment()
 
     override fun currentNavigationUser(): String? = username
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        return inflater.inflate(R.layout.details_list_layout, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
-
-        setObservers()
+        binding = DetailsListLayoutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViews(view)
+        setObservers()
+        setupViews()
     }
 
-    private fun setupViews(view: View)
+    private fun setupViews()
     {
-        progressBar = view.findViewById(R.id.progressBar)!!
-        recyclerView = view.findViewById(R.id.recyclerView)!!
-
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = recyclerAdapter
-        recyclerView.setHasFixedSize(true)
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(activity)
+            adapter = recyclerAdapter
+            setHasFixedSize(true)
+        }
     }
 
     private fun setObservers()
     {
-        viewModel.detailsState.observe(viewLifecycleOwner, {
+        viewModel.detailsState.observe(viewLifecycleOwner) {
             recyclerAdapter.updateList(it)
-        })
+        }
 
-        viewModel.screenState.observe(viewLifecycleOwner, {
+        viewModel.screenState.observe(viewLifecycleOwner) {
             when
             {
-                it.isLoading -> progressBar.setVisible()
+                it.isLoading -> binding.progressBar.setVisible()
                 it.errorMessage != null ->
                 {
-                    progressBar.setGone()
+                    binding.progressBar.setGone()
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
                 }
-                else -> progressBar.setGone()
+                else -> binding.progressBar.setGone()
             }
-        })
+        }
     }
 }

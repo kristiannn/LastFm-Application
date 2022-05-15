@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.neno.lastfmapp.MainActivity
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.databinding.ListsLayoutBinding
 import com.neno.lastfmapp.modules.details.DetailsFragment
 import com.neno.lastfmapp.modules.dialog.NotifyDialog
 import com.neno.lastfmapp.modules.utils.BundleStrings
@@ -23,49 +22,38 @@ import org.koin.core.parameter.parametersOf
 
 class AlbumsFragment : Fragment()
 {
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: ListsLayoutBinding
     private lateinit var recyclerAdapter: AlbumsRecyclerAdapter
-    private lateinit var progressBar: ProgressBar
-    private lateinit var swipeContainer: SwipeRefreshLayout
 
     private val username by lazy { arguments?.getString(BundleStrings.USERNAME_KEY) }
     private val period by lazy { arguments?.getString(BundleStrings.PERIOD_KEY) }
 
     private val viewModel: AlbumsViewModel by viewModel { parametersOf(username, period) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        return inflater.inflate(R.layout.lists_layout, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
-
-        setObservers()
+        binding = ListsLayoutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViews(view)
+        setObservers()
+        setupViews()
     }
 
-    private fun setupViews(view: View)
+    private fun setupViews()
     {
-        recyclerView = view.findViewById(R.id.recyclerView)
-        progressBar = view.findViewById(R.id.progressBar)
-        swipeContainer = view.findViewById(R.id.swipeContainer)
-
-        swipeContainer.setOnRefreshListener {
+        binding.swipeContainer.setOnRefreshListener {
             viewModel.getAlbums(true)
-            swipeContainer.isRefreshing = false
+            binding.swipeContainer.isRefreshing = false
         }
 
         val layoutManager = LinearLayoutManager(activity)
 
-        recyclerView.layoutManager = layoutManager
+        binding.recyclerView.layoutManager = layoutManager
         recyclerAdapter = AlbumsRecyclerAdapter(
             albumsList = listOf(),
             onAlbumItemClicked = { artist, album ->
@@ -80,10 +68,10 @@ class AlbumsFragment : Fragment()
                     (activity as MainActivity).supportFragmentManager.addFragment(R.id.fragment_container, it)
                 }
             })
-        recyclerView.adapter = recyclerAdapter
-        recyclerView.setHasFixedSize(true)
+        binding.recyclerView.adapter = recyclerAdapter
+        binding.recyclerView.setHasFixedSize(true)
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
@@ -104,20 +92,20 @@ class AlbumsFragment : Fragment()
 
     private fun setObservers()
     {
-        viewModel.albumsListState.observe(viewLifecycleOwner, {
+        viewModel.albumsListState.observe(viewLifecycleOwner) {
             recyclerAdapter.updateList(it)
-        })
+        }
 
-        viewModel.screenState.observe(viewLifecycleOwner, {
+        viewModel.screenState.observe(viewLifecycleOwner) {
             when
             {
-                it.isLoading -> progressBar.setVisible()
+                it.isLoading -> binding.progressBar.setVisible()
 
-                it.isListUpdating -> progressBar.setGone()
+                it.isListUpdating -> binding.progressBar.setGone()
 
                 it.errorMessage != null ->
                 {
-                    progressBar.setGone()
+                    binding.progressBar.setGone()
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
 
                     recyclerAdapter.removeLoadingItem()
@@ -125,11 +113,11 @@ class AlbumsFragment : Fragment()
 
                 else ->
                 {
-                    progressBar.setGone()
+                    binding.progressBar.setGone()
 
                     recyclerAdapter.removeLoadingItem()
                 }
             }
-        })
+        }
     }
 }

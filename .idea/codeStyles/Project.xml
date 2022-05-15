@@ -78,7 +78,6 @@
       <option name="XML_ATTRIBUTE_WRAP" value="4" />
       <option name="XML_KEEP_BLANK_LINES" value="1" />
       <option name="XML_SPACE_INSIDE_EMPTY_TAG" value="false" />
-      <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
     <codeStyleSettings language="JAVA">
       <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
@@ -127,6 +126,30 @@
       <option name="VARIABLE_ANNOTATION_WRAP" value="2" />
       <arrangement>
         <tokens>
+          <token id="visibility" name="visibility">
+            <rules>
+              <rule>
+                <match>
+                  <PUBLIC>true</PUBLIC>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <PROTECTED>true</PROTECTED>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <PACKAGE_PRIVATE>true</PACKAGE_PRIVATE>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <PRIVATE>true</PRIVATE>
+                </match>
+              </rule>
+            </rules>
+          </token>
           <token id="lifecycle" name="lifecycle">
             <rules>
               <rule>
@@ -321,30 +344,6 @@
                     <NAME>unregisterReceivers</NAME>
                     <OVERRIDDEN />
                   </AND>
-                </match>
-              </rule>
-            </rules>
-          </token>
-          <token id="visibility" name="visibility">
-            <rules>
-              <rule>
-                <match>
-                  <PUBLIC>true</PUBLIC>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <PROTECTED>true</PROTECTED>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <PACKAGE_PRIVATE>true</PACKAGE_PRIVATE>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <PRIVATE>true</PRIVATE>
                 </match>
               </rule>
             </rules>

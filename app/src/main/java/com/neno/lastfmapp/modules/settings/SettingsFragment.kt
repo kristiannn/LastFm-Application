@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
 import com.neno.lastfmapp.R
+import com.neno.lastfmapp.databinding.SettingsLayoutBinding
 import com.neno.lastfmapp.modules.utils.AccountManager
 import com.neno.lastfmapp.modules.utils.fragments.SecondaryFragment
 import org.koin.android.ext.android.inject
@@ -15,7 +15,8 @@ import org.koin.android.ext.android.inject
 
 class SettingsFragment : SecondaryFragment(), AdapterView.OnItemSelectedListener
 {
-    private lateinit var themesSpinner: Spinner
+    private lateinit var binding: SettingsLayoutBinding
+
     private val accountManager: AccountManager by inject()
     private val themes = listOf(R.style.LightTheme, R.style.DarkMutedTheme)
     private val themesHash by lazy {
@@ -29,15 +30,16 @@ class SettingsFragment : SecondaryFragment(), AdapterView.OnItemSelectedListener
 
     override fun currentNavigationUser(): String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        return inflater.inflate(R.layout.settings_layout, container, false)
+        binding = SettingsLayoutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        setupViews(view)
+        setupViews()
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
@@ -51,17 +53,18 @@ class SettingsFragment : SecondaryFragment(), AdapterView.OnItemSelectedListener
     {
     }
 
-    private fun setupViews(view: View)
+    private fun setupViews()
     {
-        themesSpinner = view.findViewById(R.id.spinnerThemes)
         val themesAdapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, themesHash.keys.toList())
         val selectedTheme =
             themesHash.keys.indexOf(themesHash.filter { accountManager.getCurrentTheme() == it.value }.keys.first())
 
-        themesAdapter.setDropDownViewResource(R.layout.menu_dropdown_item);
-        themesSpinner.adapter = themesAdapter
-        themesSpinner.setSelection(selectedTheme, false)
-        themesSpinner.onItemSelectedListener = this
+        themesAdapter.setDropDownViewResource(R.layout.menu_dropdown_item)
+        binding.spinnerThemes.apply {
+            adapter = themesAdapter
+            setSelection(selectedTheme, false)
+            onItemSelectedListener = this@SettingsFragment
+        }
     }
 }

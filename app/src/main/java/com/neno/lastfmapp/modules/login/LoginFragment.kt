@@ -8,61 +8,46 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
-import com.neno.lastfmapp.*
+import com.neno.lastfmapp.MainActivity
+import com.neno.lastfmapp.R
+import com.neno.lastfmapp.databinding.LoginLayoutBinding
 import com.neno.lastfmapp.modules.charts.ChartsFragment
 import com.neno.lastfmapp.modules.dialog.NotifyDialog
-import com.neno.lastfmapp.modules.utils.fragments.BasicFragment
 import com.neno.lastfmapp.modules.utils.BundleStrings
+import com.neno.lastfmapp.modules.utils.fragments.BasicFragment
 import com.neno.lastfmapp.modules.utils.fragments.setRootFragment
-import kotlinx.android.synthetic.main.activity_main.*
+import com.neno.lastfmapp.setGone
+import com.neno.lastfmapp.setVisible
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : BasicFragment()
 {
-    private lateinit var usernameEditText: EditText
-    private lateinit var passwordEditText: EditText
-    private lateinit var loginButton: Button
-    private lateinit var progressBar: ProgressBar
-    private lateinit var imm: InputMethodManager
-
+    private lateinit var binding: LoginLayoutBinding
     private val viewModel: LoginViewModel by viewModel()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        return inflater.inflate(R.layout.login_layout, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
-
-        setObservers()
+        binding = LoginLayoutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViews(view)
+        setObservers()
+        setupViews()
     }
 
-    private fun setupViews(view: View)
+    private fun setupViews()
     {
-        usernameEditText = view.findViewById(R.id.etUsername)
-        passwordEditText = view.findViewById(R.id.etPassword)
-        loginButton = view.findViewById(R.id.buttonLogin)
-        progressBar = view.findViewById(R.id.progressBar)
-        imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        loginButton.setOnClickListener {
+        binding.buttonLogin.setOnClickListener {
             onLoginClick()
         }
 
-        passwordEditText.setOnEditorActionListener { _, actionId, _ ->
+        binding.etPassword.setOnEditorActionListener { _, actionId, _ ->
             return@setOnEditorActionListener when (actionId)
             {
                 EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_GO, EditorInfo.IME_ACTION_SEND, EditorInfo.IME_ACTION_NEXT ->
@@ -83,7 +68,7 @@ class LoginFragment : BasicFragment()
             {
                 it.isLoading ->
                 {
-                    progressBar.setVisible()
+                    binding.progressBar.setVisible()
 
                     activity?.window?.setFlags(
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
@@ -92,14 +77,14 @@ class LoginFragment : BasicFragment()
                 }
                 it.errorMessage != null ->
                 {
-                    progressBar.setGone()
+                    binding.progressBar.setGone()
                     activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     NotifyDialog(it.errorMessage).show((activity as AppCompatActivity).supportFragmentManager, "Error!")
                 }
                 it.userLogged != null ->
                 {
-                    progressBar.setGone()
+                    binding.progressBar.setGone()
                     activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
 
                     val mainActivity = activity as MainActivity
@@ -116,7 +101,7 @@ class LoginFragment : BasicFragment()
                 }
                 else ->
                 {
-                    progressBar.setGone()
+                    binding.progressBar.setGone()
 
                     activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
@@ -126,7 +111,8 @@ class LoginFragment : BasicFragment()
 
     private fun onLoginClick()
     {
-        imm.hideSoftInputFromWindow(usernameEditText.windowToken, 0)
-        viewModel.getProfile(usernameEditText.text.toString(), passwordEditText.text.toString())
+        val imm = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.etUsername.windowToken, 0)
+        viewModel.getProfile(binding.etUsername.text.toString(), binding.etPassword.text.toString())
     }
 }
