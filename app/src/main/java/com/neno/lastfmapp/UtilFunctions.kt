@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import java.lang.StringBuilder
 import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
 
@@ -24,6 +23,11 @@ fun Long.formatToTime(timeUnit: TimeUnit): String
 fun String.toQuery(): String
 {
     return this.replace(" ", "+")
+}
+
+fun String.isLastFmImage(): Boolean
+{
+    return this.contains("lastfm.freetls.fastly.net")
 }
 
 fun Int.format(): String

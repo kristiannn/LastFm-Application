@@ -51,6 +51,16 @@ class DatabaseDataSource(private val lastFmDatabase: LastFmDatabase) : LastFmDat
         lastFmDatabase.profileDao().insertProfile(profileWrapper.mapToDb())
     }
 
+    override suspend fun saveArtist(username: String, period: String, artistWrapper: ArtistWrapper)
+    {
+        lastFmDatabase.artistDao().insertArtist(artistWrapper.mapToDb(username, period))
+    }
+
+    override suspend fun saveTrack(username: String, period: String, trackWrapper: TrackWrapper)
+    {
+        lastFmDatabase.trackDao().insertTrack(trackWrapper.mapToDb(username, period))
+    }
+
     override suspend fun saveArtists(username: String, period: String, artistsList: List<ArtistWrapper>)
     {
         artistsList.forEach { artistWrapper ->

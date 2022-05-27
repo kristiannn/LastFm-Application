@@ -20,6 +20,7 @@ class ArtistsDiffUtils(
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
     {
         return oldArtistsList[oldItemPosition]?.playCount == newArtistsList[newItemPosition]?.playCount &&
+                oldArtistsList[oldItemPosition]?.image == newArtistsList[newItemPosition]?.image &&
                 newItemPosition == oldItemPosition
     }
 

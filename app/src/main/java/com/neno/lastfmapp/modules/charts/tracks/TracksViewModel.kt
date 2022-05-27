@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neno.lastfmapp.Result
+import com.neno.lastfmapp.isLastFmImage
+import com.neno.lastfmapp.repository.DeezerRepository
 import com.neno.lastfmapp.repository.LastFmRepository
 import com.neno.lastfmapp.repository.models.TrackWrapper
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +16,8 @@ import kotlinx.coroutines.launch
 class TracksViewModel(
     private val username: String,
     private val period: String,
-    private val lastFmRepository: LastFmRepository
+    private val lastFmRepository: LastFmRepository,
+    private val deezerRepository: DeezerRepository
 ) : ViewModel()
 {
     private var page = 0
@@ -64,6 +67,28 @@ class TracksViewModel(
         }
     }
 
+    private suspend fun replaceLastFmImages(tracksList: List<TrackWrapper>)
+    {
+        val newTracksList = tracksList.toMutableList()
+
+        tracksList.forEachIndexed { index, trackWrapper ->
+            if (!trackWrapper.image.isLastFmImage())
+            {
+                return@forEachIndexed
+            }
+
+            val result = deezerRepository.getTrackPicture(username, period, trackWrapper)
+            if (result is Result.Success)
+            {
+                val newTrackWrapper =
+                    TrackWrapper(trackWrapper.track, trackWrapper.artist, trackWrapper.playCount, result.data)
+                newTracksList.removeAt(index)
+                newTracksList.add(index, newTrackWrapper)
+            }
+        }
+        _tracksListState.postValue(newTracksList)
+    }
+
     fun getTracks(isReload: Boolean)
     {
         viewModelScope.launch(Dispatchers.IO) {
@@ -99,6 +124,7 @@ class TracksViewModel(
                         errorMessage = null
                     )
                 )
+                replaceLastFmImages(newTracksList)
             } else if (result is Result.Error)
             {
                 _screenState.postValue(

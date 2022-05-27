@@ -21,6 +21,7 @@ class TracksDiffUtils(
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
     {
         return oldTracksList[oldItemPosition]?.playCount == newTracksList[newItemPosition]?.playCount &&
+                oldTracksList[oldItemPosition]?.image == newTracksList[newItemPosition]?.image &&
                 newItemPosition == oldItemPosition
     }
 }

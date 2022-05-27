@@ -14,6 +14,10 @@ interface LastFmDatabaseOperations
     suspend fun getTracks(username: String, period: String, offset: Int): Result<List<TrackWrapper>>
 
     suspend fun saveProfile(username: String, profileWrapper: ProfileWrapper)
+
+    suspend fun saveArtist(username: String, period: String, artistWrapper: ArtistWrapper)
+    suspend fun saveTrack(username: String, period: String, trackWrapper: TrackWrapper)
+
     suspend fun saveArtists(username: String, period: String, artistsList: List<ArtistWrapper>)
     suspend fun saveAlbums(username: String, period: String, albumsList: List<AlbumWrapper>)
     suspend fun saveTracks(username: String, period: String, tracksList: List<TrackWrapper>)

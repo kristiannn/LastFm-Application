@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neno.lastfmapp.Result
+import com.neno.lastfmapp.isLastFmImage
+import com.neno.lastfmapp.repository.DeezerRepository
 import com.neno.lastfmapp.repository.LastFmRepository
 import com.neno.lastfmapp.repository.models.ArtistWrapper
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +15,8 @@ import kotlinx.coroutines.launch
 class ArtistsViewModel(
     private val username: String,
     private val period: String,
-    private val lastFmRepository: LastFmRepository
+    private val lastFmRepository: LastFmRepository,
+    private val deezerRepository: DeezerRepository
 ) : ViewModel()
 {
     private var page = 0
@@ -57,6 +60,28 @@ class ArtistsViewModel(
 
             if (result is Result.Success) _artistsListState.postValue(result.data)
         }
+    }
+
+    private suspend fun replaceLastFmImages(artistsList: List<ArtistWrapper>)
+    {
+        val newArtistsList = artistsList.toMutableList()
+
+        artistsList.forEachIndexed { index, artistWrapper ->
+            if (!artistWrapper.image.isLastFmImage())
+            {
+                return@forEachIndexed
+            }
+
+            val result = deezerRepository.getArtistPicture(username, period, artistWrapper)
+            if (result is Result.Success)
+            {
+                val newArtistWrapper =
+                    ArtistWrapper(artistWrapper.artist, artistWrapper.playCount, result.data)
+                newArtistsList.removeAt(index)
+                newArtistsList.add(index, newArtistWrapper)
+            }
+        }
+        _artistsListState.postValue(newArtistsList)
     }
 
     fun getArtists(isReload: Boolean)
@@ -107,6 +132,8 @@ class ArtistsViewModel(
                         errorMessage = null
                     )
                 )
+
+                replaceLastFmImages(newArtistsList)
             } else if (result is Result.Error)
             {
                 _screenState.postValue(
