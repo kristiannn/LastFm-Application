@@ -84,6 +84,38 @@ class ArtistsViewModel(
         _artistsListState.postValue(newArtistsList)
     }
 
+    /**
+     * Creates a new list which includes the already loaded images from the last one.
+     * It's needed since the request to Last FM returns us a list with placeholder images,
+     * so we want to replace the ones we've already loaded from Deezer.
+     * */
+    private fun createNewArtistsList(
+        oldList: List<ArtistWrapper>?,
+        listFromResult: List<ArtistWrapper>
+    ): List<ArtistWrapper>
+    {
+        if (oldList?.isNullOrEmpty() == false)
+        {
+            val finalList = mutableListOf<ArtistWrapper>()
+
+            listFromResult.forEach { newListArtist ->
+                val matchingArtist = oldList.find { oldListArtist -> newListArtist.artist == oldListArtist.artist }
+                if (matchingArtist != null)
+                {
+                    finalList.add(ArtistWrapper(newListArtist.artist, newListArtist.playCount, matchingArtist.image))
+                } else
+                {
+                    finalList.add(newListArtist)
+                }
+            }
+
+            return finalList
+        } else
+        {
+            return listFromResult
+        }
+    }
+
     fun getArtists(isReload: Boolean)
     {
         viewModelScope.launch(Dispatchers.IO) {
@@ -119,10 +151,12 @@ class ArtistsViewModel(
                     return@launch
                 }
 
-                val newArtistsList: List<ArtistWrapper> =
+                val listFromResult: List<ArtistWrapper> =
                     if (isReload) result.data
                     else _artistsListState.value!! + result.data
+                val oldArtistsList = _artistsListState.value
 
+                val newArtistsList = createNewArtistsList(oldArtistsList, listFromResult)
                 _artistsListState.postValue(newArtistsList)
 
                 _screenState.postValue(

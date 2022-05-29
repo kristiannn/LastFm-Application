@@ -89,6 +89,47 @@ class TracksViewModel(
         _tracksListState.postValue(newTracksList)
     }
 
+    /**
+     * Creates a new list which includes the already loaded images from the last one.
+     * It's needed since the request to Last FM returns us a list with placeholder images,
+     * so we want to replace the ones we've already loaded from Deezer.
+     * */
+    private fun createNewTracksList(
+        oldList: List<TrackWrapper>?,
+        listFromResult: List<TrackWrapper>
+    ): List<TrackWrapper>
+    {
+        if (oldList?.isNullOrEmpty() == false)
+        {
+            val finalList = mutableListOf<TrackWrapper>()
+
+            listFromResult.forEach { newListTrack ->
+                val matchingTrack = oldList.find { oldListTrack ->
+                    newListTrack.track == oldListTrack.track && newListTrack.artist == oldListTrack.artist
+                }
+                if (matchingTrack != null)
+                {
+                    finalList.add(
+                        TrackWrapper(
+                            newListTrack.track,
+                            newListTrack.artist,
+                            newListTrack.playCount,
+                            matchingTrack.image
+                        )
+                    )
+                } else
+                {
+                    finalList.add(newListTrack)
+                }
+            }
+
+            return finalList
+        } else
+        {
+            return listFromResult
+        }
+    }
+
     fun getTracks(isReload: Boolean)
     {
         viewModelScope.launch(Dispatchers.IO) {
@@ -111,10 +152,12 @@ class TracksViewModel(
 
             if (result is Result.Success)
             {
-                val newTracksList: List<TrackWrapper> =
+                val listFromResult: List<TrackWrapper> =
                     if (isReload) result.data
                     else _tracksListState.value!! + result.data
+                val oldTracksList = _tracksListState.value
 
+                val newTracksList = createNewTracksList(oldTracksList, listFromResult)
                 _tracksListState.postValue(newTracksList)
 
                 _screenState.postValue(
@@ -124,6 +167,7 @@ class TracksViewModel(
                         errorMessage = null
                     )
                 )
+
                 replaceLastFmImages(newTracksList)
             } else if (result is Result.Error)
             {
