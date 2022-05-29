@@ -52,7 +52,9 @@ class ArtistsRecyclerAdapter(
             holder.scrobblesTextView.text = artistsList[position]!!.playCount.toString()
             holder.coverImageView.loadRoundedImage(artistsList[position]!!.image)
 
-            holder.itemView.setOnClickListener { onArtistItemClicked.invoke(artistsList[position]!!.artist) }
+            holder.itemView.setOnClickListener {
+                onArtistItemClicked.invoke(artistsList[position]!!.artist, artistsList[position]!!.image)
+            }
         }
     }
 
@@ -106,4 +108,4 @@ class ArtistsRecyclerAdapter(
     }
 }
 
-typealias OnArtistItemClicked = (artist: String) -> Unit
+typealias OnArtistItemClicked = (artist: String, image: String?) -> Unit

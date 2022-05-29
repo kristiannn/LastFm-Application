@@ -24,8 +24,9 @@ class DetailsFragment : SecondaryFragment()
     private val artist by lazy { arguments?.getString(BundleStrings.ARTIST_KEY) }
     private val album by lazy { arguments?.getString(BundleStrings.ALBUM_KEY) }
     private val track by lazy { arguments?.getString(BundleStrings.TRACK_KEY) }
+    private val image by lazy { arguments?.getString(BundleStrings.IMAGE_KEY) }
 
-    private val viewModel: DetailsViewModel by viewModel { parametersOf(artist, album, track) }
+    private val viewModel: DetailsViewModel by viewModel { parametersOf(artist, album, track, image) }
 
     override fun toolbarTitle(): String? = if (track != null) track else if (album != null) album else artist
 

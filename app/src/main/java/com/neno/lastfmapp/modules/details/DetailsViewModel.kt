@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neno.lastfmapp.R
 import com.neno.lastfmapp.Result
+import com.neno.lastfmapp.isLastFmImage
 import com.neno.lastfmapp.repository.LastFmRepository
 import com.neno.lastfmapp.repository.models.AlbumDetailsWrapper
 import com.neno.lastfmapp.repository.models.ArtistDetailsWrapper
@@ -17,6 +18,7 @@ class DetailsViewModel(
     private val artist: String?,
     private val album: String?,
     private val track: String?,
+    private val image: String?,
     private val lastFmRepository: LastFmRepository
 ) : ViewModel()
 {
@@ -66,9 +68,10 @@ class DetailsViewModel(
                     DetailsCategoryType.ARTIST ->
                     {
                         result.data as ArtistDetailsWrapper
+                        val image = if (image.isNullOrEmpty() || image.isLastFmImage()) result.data.image else image
 
                         listOf(
-                            DetailsItem.CoverImage(result.data.image),
+                            DetailsItem.CoverImage(image),
                             DetailsItem.Tags(result.data.topTags ?: emptyList()),
                             DetailsItem.LabelValueHorizontal(Pair(R.string.artist, result.data.artist)),
                             DetailsItem.LabelValueHorizontal(Pair(R.string.published, result.data.published ?: "-")),
@@ -97,9 +100,10 @@ class DetailsViewModel(
                     DetailsCategoryType.TRACK ->
                     {
                         result.data as TrackDetailsWrapper
+                        val image = if (image.isNullOrEmpty() || image.isLastFmImage()) result.data.image else image
 
                         listOf(
-                            DetailsItem.CoverImage(result.data.image ?: ""),
+                            DetailsItem.CoverImage(image ?: ""),
                             DetailsItem.Tags(result.data.topTags ?: emptyList()),
                             DetailsItem.LabelValueHorizontal(Pair(R.string.artist, result.data.artist ?: "-")),
                             DetailsItem.LabelValueHorizontal(Pair(R.string.album, result.data.album ?: "-")),

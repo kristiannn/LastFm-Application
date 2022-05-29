@@ -57,13 +57,14 @@ class TracksFragment : Fragment()
 
         recyclerAdapter = TracksRecyclerAdapter(
             tracksList = listOf(),
-            onTrackItemClicked = { artist, track ->
+            onTrackItemClicked = { artist, track, image ->
 
                 DetailsFragment().also {
                     val bundle = Bundle()
                     bundle.putString(BundleStrings.USERNAME_KEY, username)
                     bundle.putString(BundleStrings.ARTIST_KEY, artist)
                     bundle.putString(BundleStrings.TRACK_KEY, track)
+                    bundle.putString(BundleStrings.IMAGE_KEY, image)
                     it.arguments = bundle
 
                     (activity as MainActivity).supportFragmentManager.addFragment(R.id.fragment_container, it)

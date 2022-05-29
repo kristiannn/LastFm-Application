@@ -57,7 +57,7 @@ class TracksRecyclerAdapter(
 
             holder.itemView.setOnClickListener {
                 onTrackItemClicked.invoke(
-                    tracksList[position]!!.artist, tracksList[position]!!.track
+                    tracksList[position]!!.artist, tracksList[position]!!.track, tracksList[position]!!.image
                 )
             }
         }
@@ -113,4 +113,4 @@ class TracksRecyclerAdapter(
     }
 }
 
-typealias OnTrackItemClicked = (artist: String, track: String) -> Unit
+typealias OnTrackItemClicked = (artist: String, track: String, image: String?) -> Unit

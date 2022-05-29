@@ -17,7 +17,15 @@ val viewModelsModule = module {
 
     viewModel { (username: String, period: String) -> TracksViewModel(username, period, get(), get()) }
 
-    viewModel { (artist: String, album: String, track: String) -> DetailsViewModel(artist, album, track, get()) }
+    viewModel { (artist: String, album: String, track: String, image: String) ->
+        DetailsViewModel(
+            artist,
+            album,
+            track,
+            image,
+            get()
+        )
+    }
 
     viewModel { (username: String) -> FriendsViewModel(username, get()) }
 

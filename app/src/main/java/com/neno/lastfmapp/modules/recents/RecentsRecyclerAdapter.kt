@@ -91,7 +91,7 @@ class RecentsRecyclerAdapter(
                 } else
                 {
                     onTrackItemClicked.invoke(
-                        tracksList[position]!!.artist, tracksList[position]!!.track
+                        tracksList[position]!!.artist, tracksList[position]!!.track, tracksList[position]!!.image
                     )
                 }
 

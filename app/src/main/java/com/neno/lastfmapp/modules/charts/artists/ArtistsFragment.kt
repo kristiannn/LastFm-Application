@@ -56,12 +56,13 @@ class ArtistsFragment : Fragment()
         binding.recyclerView.layoutManager = layoutManager
         recyclerAdapter = ArtistsRecyclerAdapter(
             artistsList = listOf(),
-            onArtistItemClicked = { artist ->
+            onArtistItemClicked = { artist, image ->
 
                 DetailsFragment().also {
                     val bundle = Bundle()
                     bundle.putString(BundleStrings.USERNAME_KEY, username)
                     bundle.putString(BundleStrings.ARTIST_KEY, artist)
+                    bundle.putString(BundleStrings.IMAGE_KEY, image)
                     it.arguments = bundle
 
                     (activity as MainActivity).supportFragmentManager.addFragment(R.id.fragment_container, it)
